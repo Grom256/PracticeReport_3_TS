@@ -1,0 +1,17 @@
+{
+  "name": "grombricks-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GromBricks — монорепозиторій інтернет-магазину LEGO (Payload CMS + Vite + Vanilla TS/HTML/CSS)",
+  "scripts": {
+    "dev:cms": "cd cms && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build:cms": "cd cms && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build": "npm run build:cms && npm run build:frontend"
+  },
+  "workspaces": [
+    "cms",
+    "frontend"
+  ]
+}

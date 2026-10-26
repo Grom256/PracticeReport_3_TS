@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Каталог — GromBricks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div class="site-wrapper">
+    <header class="site-header" id="app-header"></header>
+
+    <main class="main-content">
+      <div class="catalog-page-container">
+        <div class="catalog-header">
+          <h1 class="page-heading">Каталог фігурок та деталей LEGO</h1>
+          <p class="page-subheading">Оригінальні елементи для колекціонерів та будівельників.</p>
+        </div>
+
+        <div class="filters-container">
+          <div class="search-bar-row">
+            <div class="search-input-wrapper">
+              <input type="text" id="search-input" class="search-input" placeholder="Пошук за назвою або артикулом...">
+            </div>
+          </div>
+
+          <div class="filters-bar">
+            <div class="type-toggle-group">
+              <button class="type-tab active" data-type="all">ВСЕ</button>
+              <button class="type-tab" data-type="minifigure">ФІГУРКИ</button>
+              <button class="type-tab" data-type="part">ДЕТАЛІ</button>
+            </div>
+
+            <label class="rare-checkbox-label">
+              <input type="checkbox" id="rare-checkbox" class="rare-checkbox">
+              <span>Тільки рідкісні ★</span>
+            </label>
+          </div>
+        </div>
+
+        <div id="catalog-grid" class="product-grid">
+          <div class="loading-container">
+            <div class="lego-spinner"></div>
+            <div class="loading-text">Завантаження каталогу...</div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer" id="app-footer"></footer>
+  </div>
+
+  <script type="module" src="/src/catalog.ts"></script>
+</body>
+</html>

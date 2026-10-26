@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GromBricks — Всесвіт колекційних мініфігурок та деталей LEGO</title>
+  
+  <!-- Google Fonts: Unbounded + Manrope -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Remix Icon (Сучасні векторні іконки) -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div class="site-wrapper">
+    <!-- Хедер лендінгу -->
+    <header class="site-header" id="app-header"></header>
+
+    <!-- Основні динамічні блоки стрічки лендінгу -->
+    <main class="main-content" id="app-main"></main>
+
+    <!-- Футер -->
+    <footer class="site-footer" id="app-footer"></footer>
+  </div>
+
+  <!-- Модальне вікно швидкого кошика та замовлення на лендінгу -->
+  <div class="modal-overlay" id="cart-modal">
+    <div class="modal-window">
+      <button class="modal-close-btn" id="close-cart-modal-btn">✕</button>
+      <div class="modal-header" style="margin-bottom:20px;border-bottom:1px solid rgba(230,191,85,0.4);padding-bottom:12px;">
+        <h3 style="font-family:var(--font-heading);color:#fff;font-size:20px;margin:0;">Кошик замовлення</h3>
+      </div>
+      <div id="modal-cart-body"></div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

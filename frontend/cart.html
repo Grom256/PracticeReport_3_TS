@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Кошик — GromBricks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div class="site-wrapper">
+    <header class="site-header" id="app-header"></header>
+
+    <main class="main-content">
+      <div class="cart-page-container">
+        <div class="cart-page-header">
+          <h1 class="page-heading">Кошик покупок</h1>
+          <p class="page-subheading">Перевірте вибрані деталі та фігурки перед оформленням.</p>
+        </div>
+
+        <div id="cart-content-area"></div>
+      </div>
+    </main>
+
+    <footer class="site-footer" id="app-footer"></footer>
+  </div>
+
+  <script type="module" src="/src/cartPage.ts"></script>
+</body>
+</html>
