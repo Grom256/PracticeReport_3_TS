@@ -3,22 +3,22 @@ export function renderCategoryCardsBlock(): string {
     {
       title: 'Мініфігурки',
       href: '#',
-      image: 'https://images.unsplash.com/photo-1587654780291-39c9404d7dd0?w=600&auto=format&fit=crop&q=80',
+      image: '/images/figures.jpg',
     },
     {
       title: 'Деталі та Зброя',
       href: '#',
-      image: 'https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=600&auto=format&fit=crop&q=80',
+      image: '/images/details.jpg',
     },
     {
       title: 'Star Wars & Ninjago',
       href: '#',
-      image: 'https://images.unsplash.com/photo-1608889175123-8ee362201f81?w=600&auto=format&fit=crop&q=80',
+      image: '/images/starwars_wall.jpg',
     },
     {
       title: 'Рідкісні Раритети',
       href: '#',
-      image: 'https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?w=600&auto=format&fit=crop&q=80',
+      image: '/images/LEGO-San-Diego-Comic-Con-Exclusives.jpg',
       isRare: true,
     },
   ]

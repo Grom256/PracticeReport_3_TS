@@ -1,8 +1,8 @@
 /**
  * GromBricks - TypeScript Type Definitions
- * Розділ 3.3. Типізація на TypeScript:
+ * Розділ 2.3. Типізація на TypeScript (Презентаційний лендінг):
  * - Type Aliases
- * - Union Types
+ * - Union Types (Discriminated Unions)
  * - Intersection Types
  * - Типізація функцій і об'єктів
  * - Типізація даних, отриманих через API
@@ -21,20 +21,6 @@ export type ProductType = 'minifigure' | 'part'
 /** Стан товару: новий (ідеальний) або вживаний (колекційний) */
 export type ProductCondition = 'new' | 'used'
 
-/** Статус життєвого циклу замовлення */
-export type OrderStatus =
-  | 'pending'
-  | 'processing'
-  | 'shipped'
-  | 'delivered'
-  | 'cancelled'
-
-/** Служби доставки по Україні */
-export type DeliveryService = 'nova_poshta' | 'ukrposhta' | 'meest'
-
-/** Спосіб оплати */
-export type PaymentMethod = 'card_transfer' | 'cash_on_delivery'
-
 /** Популярні серії всесвіту LEGO */
 export type LegoSeries =
   | 'Star Wars'
@@ -48,13 +34,13 @@ export type LegoSeries =
   | 'The Lord of the Rings'
   | 'Custom / MOC'
 
-/** Валюта розрахунку */
+/** Валюта цін */
 export type Currency = 'UAH' | 'EUR' | 'USD'
 
-/** Типи промо-варіантів банерів */
+/** Стилістичні варіанти промо-банера */
 export type BannerVariant = 'legoYellow' | 'darkBrick' | 'accentRed'
 
-/** Варіанти сортування в каталозі */
+/** Варіанти сортування у вітрині */
 export type SortOption =
   | 'price_asc'
   | 'price_desc'
@@ -63,11 +49,18 @@ export type SortOption =
   | 'newest'
 
 // ==========================================
-// 2. UNION TYPES (Типи об'єднання)
+// 2. UNION TYPES (Об'єднання типів)
 // ==========================================
 
-/** Дискриміноване об'єднання блоків для гнучкої сторінки (Page Builder) */
-export type BlockType = 'hero' | 'productGrid' | 'features' | 'banner' | 'cta'
+/** Дискримінант типів контентних блоків (Page Builder) */
+export type BlockType =
+  | 'hero'
+  | 'features'
+  | 'modelViewer'
+  | 'categoryCards'
+  | 'productGrid'
+  | 'banner'
+  | 'cta'
 
 export interface HeroBlockData {
   blockType: 'hero'
@@ -82,16 +75,6 @@ export interface HeroBlockData {
   imageUrl?: string
 }
 
-export interface ProductGridBlockData {
-  blockType: 'productGrid'
-  id?: string
-  title: string
-  subtitle?: string
-  filterType: 'all' | 'minifigures' | 'parts' | 'rare'
-  limit?: number
-  showViewAll?: boolean
-}
-
 export interface FeatureItem {
   icon: 'shield' | 'truck' | 'sparkles' | 'package' | 'check'
   title: string
@@ -104,6 +87,30 @@ export interface FeaturesBlockData {
   title: string
   subtitle?: string
   items: FeatureItem[]
+}
+
+export interface ModelViewerBlockData {
+  blockType: 'modelViewer'
+  id?: string
+  title?: string
+  subtitle?: string
+}
+
+export interface CategoryCardsBlockData {
+  blockType: 'categoryCards'
+  id?: string
+  title?: string
+  subtitle?: string
+}
+
+export interface ProductGridBlockData {
+  blockType: 'productGrid'
+  id?: string
+  title: string
+  subtitle?: string
+  filterType: 'all' | 'minifigures' | 'parts' | 'rare'
+  limit?: number
+  showViewAll?: boolean
 }
 
 export interface BannerBlockData {
@@ -121,80 +128,63 @@ export interface CtaBlockData {
   id?: string
   title: string
   description?: string
-  buttonText: string
-  buttonLink: string
+  buttonText?: string
+  buttonLink?: string
 }
-
-export interface ModelViewerBlockData {
-  blockType: 'modelViewer'
-  id?: string
-}
-
-export interface CategoryCardsBlockData {
-  blockType: 'categoryCards'
-  id?: string
-}
-
-/** Union Type для всіх доступних блоків сторінки */
-export type PageBlockData =
-  | HeroBlockData
-  | ProductGridBlockData
-  | FeaturesBlockData
-  | BannerBlockData
-  | CtaBlockData
-  | ModelViewerBlockData
-  | CategoryCardsBlockData
 
 /**
- * Union Type для станів завантаження UI:
- * дозволяє безпечно обробляти loading / error / ready / empty стани
+ * Дискриміноване об'єднання (Discriminated Union) блоків лендінгу.
+ * Поле 'blockType' слугує спільним дискримінантом для безпечного звуження типів (type narrowing).
+ */
+export type PageBlockData =
+  | HeroBlockData
+  | FeaturesBlockData
+  | ModelViewerBlockData
+  | CategoryCardsBlockData
+  | ProductGridBlockData
+  | BannerBlockData
+  | CtaBlockData
+
+/**
+ * Узагальнене дискриміноване об'єднання для представлення життєвого циклу UI
  */
 export type UIState<T> =
   | { status: 'idle' }
   | { status: 'loading' }
   | { status: 'success'; data: T }
   | { status: 'empty'; message?: string }
-  | { status: 'error'; error: string; code?: string }
+  | { status: 'error'; error: string }
 
-/** Уніфікований тип відповіді сервера (Discriminated Union) */
+/**
+ * Строгий контракт клієнт-серверного обміну
+ */
 export type ApiResponse<T> =
-  | {
-      success: true
-      data: T
-      message?: string
-      timestamp: string
-    }
-  | {
-      success: false
-      error: string
-      code?: string
-      details?: Record<string, string[]>
-      timestamp: string
-    }
+  | { success: true; data: T; message?: string }
+  | { success: false; error: string; statusCode?: number }
 
 // ==========================================
-// 3. BASE INTERFACES (Базові сутності даних)
+// 3. БАЗОВІ СУТНОСТІ CMS ТА ВІТРИНИ
 // ==========================================
 
 export interface MediaItem {
   id: ID
   url: string
-  alt: string
+  filename: string
+  mimeType: string
+  filesize: number
   width?: number
   height?: number
-  mimeType?: string
-  filesize?: number
+  alt?: string
 }
 
 export interface Category {
   id: ID
-  title: string
+  name: string
   slug: Slug
   description?: string
-  badge?: string
-  iconName?: string
-  createdAt?: string
-  updatedAt?: string
+  badgeText?: string
+  icon?: string
+  order?: number
 }
 
 export interface Product {
@@ -219,54 +209,6 @@ export interface Product {
   updatedAt?: string
 }
 
-export interface OrderItem {
-  id?: ID
-  product: ID | Product
-  productName: string
-  sku: string
-  unitPrice: number
-  quantity: number
-  imageUrl?: string
-}
-
-export interface CustomerInfo {
-  name: string
-  email: string
-  phone: string
-}
-
-export interface DeliveryInfo {
-  service: DeliveryService
-  city: string
-  branchOrAddress: string
-}
-
-export interface Order {
-  id: ID
-  orderNumber: string
-  customer: CustomerInfo
-  delivery: DeliveryInfo
-  paymentMethod: PaymentMethod
-  status: OrderStatus
-  items: OrderItem[]
-  totalAmount: number
-  notes?: string
-  createdAt: string
-  updatedAt?: string
-}
-
-/** Знімок товару, який зберігається в кошику */
-export type CartItemSnapshot = Pick<
-  Product,
-  'name' | 'slug' | 'sku' | 'price' | 'imageUrl' | 'stock'
->
-
-/** Позиція кошика: id + кількість, перетнуті зі знімком товару */
-export type CartItem = {
-  productId: ID
-  quantity: number
-} & CartItemSnapshot
-
 // ==========================================
 // 4. INTERSECTION TYPES (Типи перетину)
 // ==========================================
@@ -276,19 +218,10 @@ export type ProductWithCategory = Product & {
   categoryDetails: Category
 }
 
-/** Елемент кошика з повною інформацією про товар та сумою */
-export type CartItemWithDetails = CartItem & {
-  product: Product
-  subtotal: number
-  isAvailable: boolean
-  hasEnoughStock: boolean
-}
-
-/** Розширене замовлення з форматованими атрибутами для інтерфейсу */
-export type EnrichedOrder = Order & {
-  formattedDate: string
-  itemsCount: number
-  isShipped: boolean
+/** Товар із промо-позначками для першого екрана */
+export type FeaturedProduct = Product & {
+  badgeText: string
+  isHotDeal: boolean
 }
 
 /** Сторінка з набором динамічних блоків */
@@ -304,10 +237,10 @@ export type PageWithBlocks = PageLayout & {
 }
 
 // ==========================================
-// 5. ТИПІЗАЦІЯ ФУНКЦІЙ І ОБ'ЄКТІВ (Functions & Objects)
+// 5. ТИПІЗАЦІЯ ФУНКЦІЙ І ОБ'ЄКТІВ
 // ==========================================
 
-/** Параметри фільтрації товарів у каталозі */
+/** Параметри фільтрації товарів у вітрині */
 export interface ProductFilterOptions {
   searchQuery?: string
   productType?: ProductType | 'all'
@@ -320,49 +253,14 @@ export interface ProductFilterOptions {
   sortBy?: SortOption
 }
 
-/** Результат розрахунку вартості замовлення */
-export interface PriceCalculationResult {
-  itemsSubtotal: number
-  deliveryFee: number
-  discountAmount: number
-  total: number
-  currency: Currency
-}
-
-/** Результат валідації кошика */
-export interface CartValidationResult {
-  isValid: boolean
-  items: Array<{
-    productId: ID
-    productName: string
-    requestedQuantity: number
-    availableStock: number
-    isAvailable: boolean
-    currentPrice: number
-  }>
-  errors: string[]
-}
-
-/** Сигнатура функції валідації кошика */
-export type CartValidatorFn = (
-  items: Array<{ productId: ID; quantity: number }>,
-  productsPool: Product[],
-) => CartValidationResult
-
-/** Сигнатура функції розрахунку вартості */
-export type PriceCalculatorFn = (
-  items: CartItemWithDetails[],
-  deliveryService: DeliveryService,
-) => PriceCalculationResult
-
-/** Сигнатура функції фільтрації каталогу */
+/** Сигнатура функції фільтрації вітрини */
 export type FilterProductsFn = (
   products: Product[],
   options: ProductFilterOptions,
 ) => Product[]
 
 // ==========================================
-// 6. ТИПІЗАЦІЯ ДАНИХ API (Payload & Custom Endpoints)
+// 6. ТИПІЗАЦІЯ ДАНИХ API
 // ==========================================
 
 /** Уніфікована відповідь колекцій Payload CMS */
@@ -377,25 +275,4 @@ export interface PayloadDocsResponse<T> {
   hasNextPage: boolean
   prevPage: number | null
   nextPage: number | null
-}
-
-/** Тіло запиту на створення замовлення (Checkout API) */
-export interface CheckoutApiRequest {
-  customer: CustomerInfo
-  delivery: DeliveryInfo
-  paymentMethod: PaymentMethod
-  items: Array<{
-    productId: ID
-    quantity: number
-  }>
-  notes?: string
-}
-
-/** Тіло відповіді Checkout API */
-export interface CheckoutApiResponseData {
-  orderId: ID
-  orderNumber: string
-  totalAmount: number
-  status: OrderStatus
-  message: string
 }

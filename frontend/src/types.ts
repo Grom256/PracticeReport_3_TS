@@ -44,13 +44,3 @@ export interface PageResponse {
   }
   blocks: PageBlock[]
 }
-
-export interface CartItem {
-  productId: string | number
-  name: string
-  price: number
-  sku: string
-  imageUrl?: string
-  quantity: number
-  stock: number
-}

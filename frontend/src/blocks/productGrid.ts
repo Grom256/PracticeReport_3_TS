@@ -23,25 +23,17 @@ export function renderProductCard(p: Product): string {
 
         <div class="product-card-footer">
           <div class="product-card-price">${p.price} ₴</div>
-          <button
-            class="btn-add-cart js-add-to-cart"
-            data-id="${p.id}"
-            data-name="${escapeHtml(p.name)}"
-            data-price="${p.price}"
-            data-sku="${p.sku}"
-            data-image="${image}"
-            data-stock="${p.stock}"
+          <a
+            href="#"
+            class="btn-add-cart js-django-link"
+            title="Переглянути в магазині"
           >
-            <span>У КОШИК</span>
-          </button>
+            <span>ДЕТАЛЬНІШЕ</span>
+          </a>
         </div>
       </div>
     </div>
   `
-}
-
-function escapeHtml(str: string): string {
-  return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;')
 }
 
 export function renderProductGridBlock(block: PageBlock): string {

@@ -9,7 +9,6 @@ import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Categories } from './collections/Categories'
 import { Products } from './collections/Products'
-import { Orders } from './collections/Orders'
 import { Pages } from './collections/Pages'
 
 import { HeaderSettings } from './globals/HeaderSettings'
@@ -17,8 +16,6 @@ import { FooterSettings } from './globals/FooterSettings'
 
 import { commonDataHandler } from './endpoints/commonEndpoint'
 import { pageDataHandler } from './endpoints/pageEndpoint'
-import { cartValidateHandler } from './endpoints/cartEndpoints'
-import { orderCheckoutHandler } from './endpoints/orderEndpoints'
 import { productsSearchHandler } from './endpoints/searchEndpoint'
 import { seedDatabaseHandler } from './endpoints/seedEndpoint'
 
@@ -34,7 +31,7 @@ export default buildConfig({
   },
   cors: '*',
   csrf: [],
-  collections: [Users, Media, Categories, Products, Orders, Pages],
+  collections: [Users, Media, Categories, Products, Pages],
   globals: [HeaderSettings, FooterSettings],
   endpoints: [
     {
@@ -46,16 +43,6 @@ export default buildConfig({
       path: '/page',
       method: 'get',
       handler: pageDataHandler,
-    },
-    {
-      path: '/cart/validate',
-      method: 'post',
-      handler: cartValidateHandler,
-    },
-    {
-      path: '/orders/checkout',
-      method: 'post',
-      handler: orderCheckoutHandler,
     },
     {
       path: '/products/search',

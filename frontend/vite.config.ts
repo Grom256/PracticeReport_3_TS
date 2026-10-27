@@ -7,9 +7,6 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        catalog: resolve(__dirname, 'catalog.html'),
-        cart: resolve(__dirname, 'cart.html'),
-        checkout: resolve(__dirname, 'checkout.html'),
       },
     },
   },

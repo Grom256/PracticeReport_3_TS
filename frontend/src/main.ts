@@ -1,22 +1,11 @@
-import { CMS_ADMIN_URL, fetchCommonData, fetchPageData, submitCheckout } from './api.ts'
+import { CMS_ADMIN_URL, fetchCommonData, fetchPageData } from './api.ts'
 import { renderBlocks } from './blocks/renderBlocks.ts'
 import { initThreeViewer } from './blocks/modelViewer.ts'
-import {
-  addToCart,
-  getCart,
-  getCartTotal,
-  updateCartCountBadge,
-  getCartCount,
-  clearCart,
-  removeFromCart,
-} from './cart.ts'
 
 /**
  * Головний скрипт лендінгу (Життєвий цикл запиту за методичкою)
  */
 async function init() {
-  updateCartCountBadge()
-
   // 1. Отримуємо загальні дані (хедер, футер із Globals)
   const common = await fetchCommonData()
   renderHeader(common.header)
@@ -40,7 +29,6 @@ async function init() {
       // 3. modelViewer (3D вітрина)
       // 4. categoryCards (Напрями)
       // 5. cta (Telegram / підписка)
-      // Примітка: каталог товарів (productGrid) повністю прибрано з лендінгу
       const rawBlocks = pageData.blocks || []
 
       const heroBlock = rawBlocks.find((b) => b.blockType === 'hero') || { blockType: 'hero' }
@@ -65,8 +53,6 @@ async function init() {
         initThreeViewer()
       }, 50)
 
-      setupCartListeners()
-      setupModalCart()
       setupSmoothScrolling()
       setupDjangoLinks()
     } catch (error) {
@@ -119,7 +105,7 @@ function renderHeader(_header: any) {
     </div>
 
     <!-- Мобільне меню навігації -->
-    <div id="mobile-nav-drawer" class="mobile-nav-drawer" style="display:none;">
+    <div id="mobile-nav-drawer" class="mobile-nav-drawer">
       <a href="#why-us" class="mobile-nav-link">ПЕРЕВАГИ</a>
       <a href="#models-3d" class="mobile-nav-link">3D ВІТРИНА</a>
       <a href="#directions" class="mobile-nav-link">НАПРЯМКИ</a>
@@ -141,22 +127,47 @@ function setupMobileMenu() {
   const drawer = document.getElementById('mobile-nav-drawer')
   if (!toggleBtn || !drawer) return
 
-  toggleBtn.addEventListener('click', () => {
-    const isClosed = drawer.style.display === 'none' || !drawer.style.display
-    drawer.style.display = isClosed ? 'flex' : 'none'
+  const closeMenu = () => {
+    drawer.classList.remove('is-open')
+    toggleBtn.classList.remove('is-active')
+    toggleBtn.setAttribute('aria-expanded', 'false')
     const icon = toggleBtn.querySelector('i')
-    if (icon) {
-      icon.className = isClosed ? 'ri-close-line' : 'ri-menu-line'
+    if (icon) icon.className = 'ri-menu-line'
+  }
+
+  const openMenu = () => {
+    drawer.classList.add('is-open')
+    toggleBtn.classList.add('is-active')
+    toggleBtn.setAttribute('aria-expanded', 'true')
+    const icon = toggleBtn.querySelector('i')
+    if (icon) icon.className = 'ri-close-line'
+  }
+
+  toggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation()
+    const isOpen = drawer.classList.contains('is-open')
+    if (isOpen) {
+      closeMenu()
+    } else {
+      openMenu()
     }
   })
 
   // Закриваємо мобільне меню при кліку на будь-яке посилання
   drawer.querySelectorAll('a').forEach((link) => {
     link.addEventListener('click', () => {
-      drawer.style.display = 'none'
-      const icon = toggleBtn.querySelector('i')
-      if (icon) icon.className = 'ri-menu-line'
+      closeMenu()
     })
+  })
+
+  // Закриваємо мобільне меню при кліку поза його межами
+  document.addEventListener('click', (e) => {
+    if (drawer.classList.contains('is-open')) {
+      const target = e.target as Node
+      if (!drawer.contains(target) && !toggleBtn.contains(target)) {
+        closeMenu()
+      }
+    }
   })
 }
 
@@ -206,178 +217,6 @@ function renderFooter(footer: any) {
       <div>Магазин не пов’язаний з компанією LEGO Group. Навчальний проєкт.</div>
     </div>
   `
-}
-
-export function setupCartListeners() {
-  document.querySelectorAll('.js-add-to-cart').forEach((btn) => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault()
-      const el = e.currentTarget as HTMLElement
-      addToCart({
-        id: el.dataset.id || '',
-        name: el.dataset.name || '',
-        price: Number(el.dataset.price) || 0,
-        sku: el.dataset.sku || '',
-        imageUrl: el.dataset.image,
-        productType: 'minifigure',
-        slug: '',
-        condition: 'new',
-        stock: Number(el.dataset.stock) || 1,
-        isRare: false,
-      })
-      renderModalCartContent()
-    })
-  })
-}
-
-function setupModalCart() {
-  const modal = document.getElementById('cart-modal')
-  const openBtn = document.getElementById('open-cart-modal-btn')
-  const closeBtn = document.getElementById('close-cart-modal-btn')
-
-  if (openBtn && modal) {
-    openBtn.addEventListener('click', () => {
-      renderModalCartContent()
-      modal.classList.add('open')
-    })
-  }
-
-  if (closeBtn && modal) {
-    closeBtn.addEventListener('click', () => {
-      modal.classList.remove('open')
-    })
-  }
-
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.classList.remove('open')
-      }
-    })
-  }
-}
-
-function renderModalCartContent() {
-  const body = document.getElementById('modal-cart-body')
-  if (!body) return
-
-  const items = getCart()
-  if (items.length === 0) {
-    body.innerHTML = `
-      <div style="text-align:center;padding:40px 10px;">
-        <div style="font-size:36px;color:#e6bf55;margin-bottom:12px;">🛍️</div>
-        <h3 class="model-card-title" style="font-size:20px;">Кошик порожній</h3>
-        <p style="color:#7487a6;margin-bottom:20px;font-size:14px;">Ви ще не додали фігурок або деталей LEGO.</p>
-        <a href="#catalog" class="btn btn-primary" onclick="document.getElementById('cart-modal').classList.remove('open')">
-          ДО КАТАЛОГУ
-        </a>
-      </div>
-    `
-    return
-  }
-
-  const itemsHtml = items
-    .map(
-      (item) => `
-      <div class="cart-table-row" style="padding:12px 0;">
-        <div class="cart-table-product-cell">
-          <div class="cart-item-thumbnail" style="width:50px;height:50px;">
-            <img src="${item.imageUrl || ''}" alt="${item.name}" />
-          </div>
-          <div>
-            <div style="font-weight:700;color:#fff;font-size:14px;">${item.name}</div>
-            <div style="font-size:12px;color:#7487a6;">${item.price} ₴ × ${item.quantity} шт.</div>
-          </div>
-        </div>
-        <div style="font-weight:700;color:#f0cf7a;">${item.price * item.quantity} ₴</div>
-        <div>
-          <button class="cart-remove-btn js-modal-remove" data-id="${item.productId}">✕</button>
-        </div>
-      </div>
-    `,
-    )
-    .join('')
-
-  const total = getCartTotal()
-
-  body.innerHTML = `
-    <div style="margin-bottom:20px;">
-      ${itemsHtml}
-    </div>
-
-    <div class="summary-total-row" style="margin-bottom:24px;">
-      <span>Разом до сплати:</span>
-      <span class="total-highlight">${total} ₴</span>
-    </div>
-
-    <form id="modal-quick-checkout-form" style="display:flex;flex-direction:column;gap:12px;">
-      <h4 style="color:#e6bf55;font-size:13px;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;font-family:var(--font-heading);">
-        Швидке замовлення:
-      </h4>
-      <input type="text" id="modal-cust-name" class="form-input" required placeholder="Ваше ім'я та прізвище" />
-      <input type="tel" id="modal-cust-phone" class="form-input" required value="+380" placeholder="+380XXXXXXXXX" />
-      <input type="text" id="modal-cust-city" class="form-input" required placeholder="Місто доставки (Нова Пошта)" />
-
-      <button type="submit" id="modal-submit-btn" class="btn btn-primary" style="margin-top:10px;">
-        ПІДТВЕРДИТИ ЗАМОВЛЕННЯ
-      </button>
-    </form>
-    <div id="modal-order-success" style="display:none;margin-top:16px;"></div>
-  `
-
-  body.querySelectorAll('.js-modal-remove').forEach((btn) => {
-    btn.addEventListener('click', (e) => {
-      const id = (e.currentTarget as HTMLElement).dataset.id || ''
-      removeFromCart(id)
-      renderModalCartContent()
-    })
-  })
-
-  const form = document.getElementById('modal-quick-checkout-form') as HTMLFormElement
-  if (form) {
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault()
-      const submitBtn = document.getElementById('modal-submit-btn') as HTMLButtonElement
-      if (submitBtn) {
-        submitBtn.disabled = true
-        submitBtn.textContent = 'ОФОРМЛЕННЯ...'
-      }
-
-      const name = (document.getElementById('modal-cust-name') as HTMLInputElement).value
-      const phone = (document.getElementById('modal-cust-phone') as HTMLInputElement).value
-      const city = (document.getElementById('modal-cust-city') as HTMLInputElement).value
-
-      try {
-        const res = await submitCheckout({
-          customer: { name, phone, email: 'client@grombricks.ua' },
-          delivery: { service: 'nova_poshta', city, branchOrAddress: 'Відділення №1' },
-          paymentMethod: 'card_transfer',
-          items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
-        })
-
-        if (res.success) {
-          clearCart()
-          const successBox = document.getElementById('modal-order-success')
-          if (successBox) {
-            successBox.style.display = 'block'
-            successBox.innerHTML = `
-              <div class="confirmation-card" style="padding:20px;">
-                <h4 style="color:#f0cf7a;margin-bottom:8px;">Замовлення успішно створено!</h4>
-                <p style="font-size:13px;color:#cfd6e0;">Номер: <strong>${res.data?.orderNumber || 'GB-1001'}</strong>. Ми зв'яжемось з вами для відправки.</p>
-              </div>
-            `
-          }
-          form.style.display = 'none'
-        }
-      } catch (err: any) {
-        alert(err.message || 'Помилка оформлення')
-        if (submitBtn) {
-          submitBtn.disabled = false
-          submitBtn.textContent = 'ПІДТВЕРДИТИ ЗАМОВЛЕННЯ'
-        }
-      }
-    })
-  }
 }
 
 function setupSmoothScrolling() {
