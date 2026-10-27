@@ -2,7 +2,6 @@ import type { PageBlock } from '../types.ts'
 import { renderHeroBlock } from './hero.ts'
 import { renderCategoryCardsBlock } from './categoryCards.ts'
 import { renderModelViewerBlock } from './modelViewer.ts'
-import { renderProductGridBlock } from './productGrid.ts'
 import { renderCtaBlock } from './cta.ts'
 import { renderFeaturesBlock } from './features.ts'
 
@@ -24,20 +23,17 @@ export function renderBlocks(blocks: PageBlock[]): string {
         case 'hero':
           return renderHeroBlock(block)
 
-        case 'categoryCards':
-          return renderCategoryCardsBlock()
+        case 'features':
+          return renderFeaturesBlock(block)
 
         case 'modelViewer':
-          return renderModelViewerBlock()
+          return renderModelViewerBlock(block)
 
-        case 'productGrid':
-          return renderProductGridBlock(block)
+        case 'categoryCards':
+          return renderCategoryCardsBlock(block)
 
         case 'cta':
           return renderCtaBlock(block)
-
-        case 'features':
-          return renderFeaturesBlock(block)
 
         default:
           console.warn(`Невідомий тип блоку: ${type}`)

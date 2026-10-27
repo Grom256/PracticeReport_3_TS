@@ -1,18 +1,18 @@
-export interface Product {
-  id: string | number
+export interface Model3DItem {
+  id: string
   name: string
-  slug: string
-  sku: string
-  productType: 'minifigure' | 'part'
-  series?: string
-  price: number
-  condition: 'new' | 'used'
-  stock: number
-  isRare: boolean
-  imageUrl?: string
-  description?: string
-  color?: string
-  partNumber?: string
+  subtitle: string
+  objPath: string
+  mtlPath: string
+  tag: string
+  description: string
+}
+
+export interface CategoryCardItem {
+  title: string
+  image: string
+  href?: string
+  isRare?: boolean
 }
 
 export interface CommonData {

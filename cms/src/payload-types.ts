@@ -70,7 +70,6 @@ export interface Config {
     users: User;
     media: Media;
     categories: Category;
-    products: Product;
     pages: Page;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -82,7 +81,6 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
-    products: ProductsSelect<false> | ProductsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -223,50 +221,6 @@ export interface Category {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "products".
- */
-export interface Product {
-  id: number;
-  name: string;
-  slug: string;
-  /**
-   * Унікальний артикул товару (наприклад, SW-VADER-01 або PART-3001-RED)
-   */
-  sku: string;
-  productType: 'minifigure' | 'part';
-  series?:
-    | (
-        | 'Star Wars'
-        | 'Marvel Super Heroes'
-        | 'Harry Potter'
-        | 'Ninjago'
-        | 'Classic Space'
-        | 'Castle'
-        | 'Technic'
-        | 'City'
-        | 'The Lord of the Rings'
-        | 'Custom / MOC'
-      )
-    | null;
-  price: number;
-  condition: 'new' | 'used';
-  stock: number;
-  isRare?: boolean | null;
-  category: number | Category;
-  images?: (number | null) | Media;
-  /**
-   * Шлях до локального або віддаленого фото (/images/... або https://...)
-   */
-  imageUrl?: string | null;
-  description?: string | null;
-  color?: string | null;
-  partNumber?: string | null;
-  isActive?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
 export interface Page {
@@ -294,16 +248,6 @@ export interface Page {
     | {
         title: string;
         subtitle?: string | null;
-        filterType: 'all' | 'minifigures' | 'parts' | 'rare';
-        limit?: number | null;
-        showViewAll?: boolean | null;
-        id?: string | null;
-        blockName?: string | null;
-        blockType: 'productGrid';
-      }
-    | {
-        title: string;
-        subtitle?: string | null;
         items?:
           | {
               icon: 'shield' | 'sparkles' | 'package' | 'truck' | 'check';
@@ -315,6 +259,42 @@ export interface Page {
         id?: string | null;
         blockName?: string | null;
         blockType: 'features';
+      }
+    | {
+        badge?: string | null;
+        title: string;
+        subtitle?: string | null;
+        models?:
+          | {
+              modelId: string;
+              name: string;
+              subtitle: string;
+              tag?: string | null;
+              description: string;
+              objPath: string;
+              mtlPath: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'modelViewer';
+      }
+    | {
+        badge?: string | null;
+        title: string;
+        items?:
+          | {
+              title: string;
+              image: string;
+              href?: string | null;
+              isRare?: boolean | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'categoryCards';
       }
     | {
         title: string;
@@ -374,10 +354,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'categories';
         value: number | Category;
-      } | null)
-    | ({
-        relationTo: 'products';
-        value: number | Product;
       } | null)
     | ({
         relationTo: 'pages';
@@ -519,30 +495,6 @@ export interface CategoriesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "products_select".
- */
-export interface ProductsSelect<T extends boolean = true> {
-  name?: T;
-  slug?: T;
-  sku?: T;
-  productType?: T;
-  series?: T;
-  price?: T;
-  condition?: T;
-  stock?: T;
-  isRare?: T;
-  category?: T;
-  images?: T;
-  imageUrl?: T;
-  description?: T;
-  color?: T;
-  partNumber?: T;
-  isActive?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages_select".
  */
 export interface PagesSelect<T extends boolean = true> {
@@ -566,17 +518,6 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
-        productGrid?:
-          | T
-          | {
-              title?: T;
-              subtitle?: T;
-              filterType?: T;
-              limit?: T;
-              showViewAll?: T;
-              id?: T;
-              blockName?: T;
-            };
         features?:
           | T
           | {
@@ -588,6 +529,44 @@ export interface PagesSelect<T extends boolean = true> {
                     icon?: T;
                     title?: T;
                     description?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        modelViewer?:
+          | T
+          | {
+              badge?: T;
+              title?: T;
+              subtitle?: T;
+              models?:
+                | T
+                | {
+                    modelId?: T;
+                    name?: T;
+                    subtitle?: T;
+                    tag?: T;
+                    description?: T;
+                    objPath?: T;
+                    mtlPath?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        categoryCards?:
+          | T
+          | {
+              badge?: T;
+              title?: T;
+              items?:
+                | T
+                | {
+                    title?: T;
+                    image?: T;
+                    href?: T;
+                    isRare?: T;
                     id?: T;
                   };
               id?: T;

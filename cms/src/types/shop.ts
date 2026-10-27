@@ -1,11 +1,11 @@
 /**
  * GromBricks - TypeScript Type Definitions
  * Розділ 2.3. Типізація на TypeScript (Презентаційний лендінг):
- * - Type Aliases
- * - Union Types (Discriminated Unions)
- * - Intersection Types
+ * - Type Aliases (Псевдоніми типів)
+ * - Union Types / Discriminated Unions (Дискриміновані об'єднання типів)
+ * - Intersection Types (Типи перетину)
  * - Типізація функцій і об'єктів
- * - Типізація даних, отриманих через API
+ * - Типізація клієнт-серверного API обміну
  */
 
 // ==========================================
@@ -14,12 +14,7 @@
 
 export type ID = string | number
 export type Slug = string
-
-/** Тип товару: колекційна мініфігурка або окрема деталь LEGO */
-export type ProductType = 'minifigure' | 'part'
-
-/** Стан товару: новий (ідеальний) або вживаний (колекційний) */
-export type ProductCondition = 'new' | 'used'
+export type ModelId = 'golden_ninja' | 'kai_jungle' | 'cole_jungle' | string
 
 /** Популярні серії всесвіту LEGO */
 export type LegoSeries =
@@ -40,25 +35,19 @@ export type Currency = 'UAH' | 'EUR' | 'USD'
 /** Стилістичні варіанти промо-банера */
 export type BannerVariant = 'legoYellow' | 'darkBrick' | 'accentRed'
 
-/** Варіанти сортування у вітрині */
-export type SortOption =
-  | 'price_asc'
-  | 'price_desc'
-  | 'name_asc'
-  | 'name_desc'
-  | 'newest'
+/** Режими керування 3D-вітриною Three.js */
+export type ViewerControlMode = 'orbit' | 'autoRotate' | 'static'
 
 // ==========================================
 // 2. UNION TYPES (Об'єднання типів)
 // ==========================================
 
-/** Дискримінант типів контентних блоків (Page Builder) */
+/** Дискримінант типів контентних блоків лендінгу (Page Builder) */
 export type BlockType =
   | 'hero'
   | 'features'
   | 'modelViewer'
   | 'categoryCards'
-  | 'productGrid'
   | 'banner'
   | 'cta'
 
@@ -89,28 +78,42 @@ export interface FeaturesBlockData {
   items: FeatureItem[]
 }
 
+/** 3D модель мініфігурки для інтерактивного перегляду */
+export interface Model3DItem {
+  modelId: ModelId
+  name: string
+  subtitle: string
+  tag?: string
+  description: string
+  objPath: string
+  mtlPath: string
+  scale?: number
+  isFeatured?: boolean
+}
+
 export interface ModelViewerBlockData {
   blockType: 'modelViewer'
   id?: string
-  title?: string
+  badge?: string
+  title: string
   subtitle?: string
+  models?: Model3DItem[]
+}
+
+export interface CategoryCardItem {
+  title: string
+  image: string
+  href?: string
+  isRare?: boolean
+  badge?: string
 }
 
 export interface CategoryCardsBlockData {
   blockType: 'categoryCards'
   id?: string
-  title?: string
-  subtitle?: string
-}
-
-export interface ProductGridBlockData {
-  blockType: 'productGrid'
-  id?: string
+  badge?: string
   title: string
-  subtitle?: string
-  filterType: 'all' | 'minifigures' | 'parts' | 'rare'
-  limit?: number
-  showViewAll?: boolean
+  items?: CategoryCardItem[]
 }
 
 export interface BannerBlockData {
@@ -141,7 +144,6 @@ export type PageBlockData =
   | FeaturesBlockData
   | ModelViewerBlockData
   | CategoryCardsBlockData
-  | ProductGridBlockData
   | BannerBlockData
   | CtaBlockData
 
@@ -190,41 +192,21 @@ export interface Category {
   order?: number
 }
 
-export interface Product {
-  id: ID
-  name: string
-  slug: Slug
-  sku: string
-  productType: ProductType
-  series?: LegoSeries | string
-  price: number
-  condition: ProductCondition
-  stock: number
-  isRare: boolean
-  category: ID | Category
-  images?: MediaItem | string | null
-  imageUrl?: string
-  description?: string
-  color?: string
-  partNumber?: string
-  isActive: boolean
-  createdAt?: string
-  updatedAt?: string
-}
-
 // ==========================================
 // 4. INTERSECTION TYPES (Типи перетину)
 // ==========================================
 
-/** Товар із гарантовано розгорнутою (populated) категорією */
-export type ProductWithCategory = Product & {
-  categoryDetails: Category
+/** 3D-модель із розширеними параметрами рендерингу сцени */
+export type ModelWithSceneSettings = Model3DItem & {
+  initialCameraDistance?: number
+  rotationSpeed?: number
+  ambientIntensity?: number
 }
 
-/** Товар із промо-позначками для першого екрана */
-export type FeaturedProduct = Product & {
-  badgeText: string
-  isHotDeal: boolean
+/** Картка напрямку із таймером активності */
+export type FeaturedCategoryCard = CategoryCardItem & {
+  featuredUntil?: string
+  priorityOrder: number
 }
 
 /** Сторінка з набором динамічних блоків */
@@ -243,24 +225,21 @@ export type PageWithBlocks = PageLayout & {
 // 5. ТИПІЗАЦІЯ ФУНКЦІЙ І ОБ'ЄКТІВ
 // ==========================================
 
-/** Параметри фільтрації товарів у вітрині */
-export interface ProductFilterOptions {
+/** Параметри пошуку та вибірки 3D моделей */
+export interface ModelFilterOptions {
+  tag?: string
   searchQuery?: string
-  productType?: ProductType | 'all'
-  series?: LegoSeries | 'all' | string
-  condition?: ProductCondition | 'all'
-  categorySlug?: string
-  onlyRare?: boolean
-  minPrice?: number
-  maxPrice?: number
-  sortBy?: SortOption
+  isFeatured?: boolean
 }
 
-/** Сигнатура функції фільтрації вітрини */
-export type FilterProductsFn = (
-  products: Product[],
-  options: ProductFilterOptions,
-) => Product[]
+/** Сигнатура функції фільтрації 3D моделей у вітрині */
+export type FilterModelsFn = (
+  models: Model3DItem[],
+  options: ModelFilterOptions,
+) => Model3DItem[]
+
+/** Сигнатура перемикача активної 3D моделі */
+export type SwitchModelHandler = (modelId: string) => Promise<boolean>
 
 // ==========================================
 // 6. ТИПІЗАЦІЯ ДАНИХ API

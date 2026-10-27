@@ -1,5 +1,5 @@
 import type { PayloadHandler } from 'payload'
-import { MOCK_HOME_BLOCKS, MOCK_PRODUCTS } from '../lib/mockData'
+import { MOCK_HOME_BLOCKS } from '../lib/mockData'
 
 /**
  * Ендпоінт /api/page?path=
@@ -23,29 +23,10 @@ export const pageDataHandler: PayloadHandler = async (req) => {
         pageDoc = pagesRes.docs[0]
       }
     } catch (e) {
-      // Fallback
+      // Fallback до мокових даних при відсутності запису
     }
 
-    // Отримуємо актуальні товари для блоку productGrid
-    let productsList: any[] = []
-    try {
-      const prodRes = await req.payload.find({
-        collection: 'products',
-        where: { isActive: { equals: true } },
-        limit: 12,
-      })
-      if (prodRes.docs.length > 0) {
-        productsList = prodRes.docs
-      }
-    } catch (e) {
-      // Fallback
-    }
-
-    if (productsList.length === 0) {
-      productsList = MOCK_PRODUCTS
-    }
-
-    // Якщо сторінка знайдена в БД — беремо її блоки, інакше моковий набір
+    // Якщо сторінка знайдена в БД — беремо її блоки, інакше моковий набір лендінгу
     const blocks = pageDoc?.layout || MOCK_HOME_BLOCKS
 
     // Формуємо чистий плоский JSON для фронтенду
@@ -57,16 +38,7 @@ export const pageDataHandler: PayloadHandler = async (req) => {
         description:
           'GromBricks — ексклюзивні та оригінальні мініфігурки і деталі LEGO для колекціонерів.',
       },
-      blocks: blocks.map((b: any) => {
-        // Якщо блок типу productGrid — додаємо до нього чистий масив товарів
-        if (b.blockType === 'productGrid') {
-          return {
-            ...b,
-            products: productsList,
-          }
-        }
-        return b
-      }),
+      blocks,
     }
 
     return Response.json(

@@ -8,7 +8,6 @@ import sharp from 'sharp'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Categories } from './collections/Categories'
-import { Products } from './collections/Products'
 import { Pages } from './collections/Pages'
 
 import { HeaderSettings } from './globals/HeaderSettings'
@@ -16,7 +15,6 @@ import { FooterSettings } from './globals/FooterSettings'
 
 import { commonDataHandler } from './endpoints/commonEndpoint'
 import { pageDataHandler } from './endpoints/pageEndpoint'
-import { productsSearchHandler } from './endpoints/searchEndpoint'
 import { seedDatabaseHandler } from './endpoints/seedEndpoint'
 
 const filename = fileURLToPath(import.meta.url)
@@ -31,7 +29,7 @@ export default buildConfig({
   },
   cors: '*',
   csrf: [],
-  collections: [Users, Media, Categories, Products, Pages],
+  collections: [Users, Media, Categories, Pages],
   globals: [HeaderSettings, FooterSettings],
   endpoints: [
     {
@@ -43,11 +41,6 @@ export default buildConfig({
       path: '/page',
       method: 'get',
       handler: pageDataHandler,
-    },
-    {
-      path: '/products/search',
-      method: 'get',
-      handler: productsSearchHandler,
     },
     {
       path: '/seed',

@@ -1,4 +1,4 @@
-import type { CommonData, PageResponse, Product } from './types.ts'
+import type { CommonData, PageResponse } from './types.ts'
 
 /**
  * Локально Vite проксує API на Payload CMS. У Vercel задай VITE_API_BASE
@@ -98,9 +98,73 @@ export async function fetchPageData(path: string = '/'): Promise<PageResponse> {
         },
         {
           blockType: 'modelViewer',
+          badge: '3D ЕКСПОЗИЦІЯ',
+          title: 'Інтерактивна 3D Вітрина Мініфігурок',
+          subtitle:
+            'Обертайте фігурку на 360°, масштабуйте та роздивляйтесь деталі зі студійним освітленням',
+          models: [
+            {
+              id: 'golden_ninja',
+              name: 'Golden Ninja (Lloyd)',
+              subtitle: 'Колекційна серія Ninjago Legacy',
+              objPath: '/models/golden_ninja.obj',
+              mtlPath: '/models/golden_ninja.mtl',
+              tag: 'Ексклюзив ★',
+              description:
+                'Легендарний Золотий Ніндзя Ллойд у виняткових золотих обладунках із детальним тисненням. Модель з високою деталізацією кожного елемента.',
+            },
+            {
+              id: 'kai_jungle',
+              name: 'Kai Jungle Robes',
+              subtitle: 'Ninjago: Tournament of Elements',
+              objPath: '/models/kai_jungle.obj',
+              mtlPath: '/models/kai_jungle.mtl',
+              tag: 'Популярне',
+              description:
+                'Кай у спеціальному бойовому кімоно для джунглів зі стрічками та традиційними вогняними емблемами клану Вогню.',
+            },
+            {
+              id: 'cole_jungle',
+              name: 'Cole Jungle Robes',
+              subtitle: 'Ninjago: Tournament of Elements',
+              objPath: '/models/cole_jungle.obj',
+              mtlPath: '/models/cole_jungle.mtl',
+              tag: 'Рідкісне',
+              description:
+                'Коул — майстер стихії Землі в міцному спорядженні для експедицій у тропічні джунглі із захисними накладками.',
+            },
+          ],
         },
         {
           blockType: 'categoryCards',
+          badge: 'НАПРЯМКИ',
+          title: 'Оберіть напрям',
+          items: [
+            {
+              title: 'Мініфігурки',
+              href: '#',
+              image: '/images/figures.jpg',
+              isRare: false,
+            },
+            {
+              title: 'Деталі та Зброя',
+              href: '#',
+              image: '/images/details.jpg',
+              isRare: false,
+            },
+            {
+              title: 'Star Wars & Ninjago',
+              href: '#',
+              image: '/images/starwars_wall.jpg',
+              isRare: false,
+            },
+            {
+              title: 'Рідкісні Раритети',
+              href: '#',
+              image: '/images/LEGO-San-Diego-Comic-Con-Exclusives.jpg',
+              isRare: true,
+            },
+          ],
         },
         {
           blockType: 'cta',
@@ -112,21 +176,5 @@ export async function fetchPageData(path: string = '/'): Promise<PageResponse> {
         },
       ],
     }
-  }
-}
-
-/**
- * Пошук та фільтрація товарів для вітрини (/api/products/search)
- */
-export async function fetchProducts(params: Record<string, string> = {}): Promise<Product[]> {
-  try {
-    const query = new URLSearchParams(params).toString()
-    const res = await fetch(`${API_BASE}/api/products/search?${query}`)
-    if (!res.ok) throw new Error(`HTTP error ${res.status}`)
-    const json = await res.json()
-    return json.data || []
-  } catch (error) {
-    console.error('Помилка завантаження товарів:', error)
-    return []
   }
 }

@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import type { PageBlock } from '../types.ts'
 
 export interface ModelInfo {
   id: string
@@ -46,26 +47,49 @@ export const MODELS_DATA: ModelInfo[] = [
   },
 ]
 
-export function renderModelViewerBlock(): string {
-  const tabsHtml = MODELS_DATA.map(
-    (m, i) => `
+// Поточний динамічний список моделей (з CMS або дефолтний)
+let activeModelsList: ModelInfo[] = [...MODELS_DATA]
+
+export function renderModelViewerBlock(block?: PageBlock): string {
+  if (block?.models && Array.isArray(block.models) && block.models.length > 0) {
+    activeModelsList = block.models.map((m: any) => ({
+      id: m.modelId || m.id || 'model',
+      name: m.name || '',
+      subtitle: m.subtitle || '',
+      objPath: m.objPath || '',
+      mtlPath: m.mtlPath || '',
+      tag: m.tag || 'Колекційне',
+      description: m.description || '',
+    }))
+  } else {
+    activeModelsList = [...MODELS_DATA]
+  }
+
+  const badge = block?.badge || '3D ЕКСПОЗИЦІЯ'
+  const title = block?.title || 'Інтерактивна 3D Вітрина Мініфігурок'
+  const subtitle =
+    block?.subtitle ||
+    'Обертайте фігурку на 360°, масштабуйте та роздивляйтесь деталі зі студійним освітленням'
+
+  const tabsHtml = activeModelsList
+    .map(
+      (m, i) => `
     <button class="model-select-tab ${i === 0 ? 'active' : ''}" data-model-id="${m.id}">
       <span class="model-tab-tag">${m.tag}</span>
       <span class="model-tab-name">${m.name}</span>
     </button>
   `,
-  ).join('')
+    )
+    .join('')
 
-  const active = MODELS_DATA[0]
+  const active = activeModelsList[0] || MODELS_DATA[0]
 
   return `
     <section class="models-3d-section" id="models-3d">
       <div class="models-3d-header">
-        <div class="section-label">3D ЕКСПОЗИЦІЯ</div>
-        <h2 class="section-title">Інтерактивна 3D Вітрина Мініфігурок</h2>
-        <p class="section-subtitle">
-          Обертайте фігурку на 360°, масштабуйте та роздивляйтесь деталі зі студійним освітленням
-        </p>
+        <div class="section-label">${badge}</div>
+        <h2 class="section-title">${title}</h2>
+        <p class="section-subtitle">${subtitle}</p>
       </div>
 
       <div class="models-3d-container">
@@ -99,9 +123,9 @@ export function renderModelViewerBlock(): string {
             </div>
 
             <div class="model-actions-box">
-              <a href="#" class="btn btn-primary js-django-link" style="width:100%;text-align:center;">
-                <i class="ri-store-2-line"></i>
-                <span>ПЕРЕЙТИ В МАГАЗИН</span>
+              <a href="https://t.me/grombricks" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="width:100%;text-align:center;">
+                <i class="ri-telegram-fill"></i>
+                <span>ЗАМОВИТИ В TELEGRAM</span>
                 <i class="ri-arrow-right-up-line"></i>
               </a>
               <a href="#directions" class="btn btn-secondary" style="width:100%;text-align:center;margin-top:10px;">
@@ -123,9 +147,6 @@ export function initThreeViewer() {
   const container = document.getElementById('threejs-canvas-container')
   if (!container) return
 
-  // Не підставляємо фіксовану ширину на випадок, якщо браузер ще не встиг
-  // прорахувати layout. Інакше Three.js встановлює canvas, наприклад, у 600px,
-  // і його intrinsic-розмір не дає CSS Grid звузити колонку на мобільному.
   const getViewportSize = () => {
     const { width, height } = container.getBoundingClientRect()
     return {
@@ -144,8 +165,6 @@ export function initThreeViewer() {
   camera.position.set(0, 5, 20)
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-  // Розмір буфера рендерингу задаємо в JS, а відображуваний розмір canvas —
-  // лише через CSS (100% від контейнера).
   renderer.setSize(width, height, false)
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
   renderer.shadowMap.enabled = true
@@ -230,7 +249,6 @@ export function initThreeViewer() {
         objLoader.load(
           modelData.objPath,
           (object) => {
-            // Центруємо та маштабуємо об'єкт
             const box = new THREE.Box3().setFromObject(object)
             const center = box.getCenter(new THREE.Vector3())
             const size = box.getSize(new THREE.Vector3())
@@ -240,7 +258,6 @@ export function initThreeViewer() {
             const scale = targetHeight / (maxDim || 1)
             object.scale.set(scale, scale, scale)
 
-            // Переміщуємо так, щоб стояла рівно на п'єдесталі
             object.position.x = -center.x * scale
             object.position.y = -box.min.y * scale - 4.2
             object.position.z = -center.z * scale
@@ -268,7 +285,6 @@ export function initThreeViewer() {
       undefined,
       (err) => {
         console.error('Помилка завантаження MTL:', err)
-        // Якщо MTL не завантажився — вантажимо чистий OBJ
         const objLoader = new OBJLoader()
         objLoader.load(modelData.objPath, (object) => {
           object.traverse((child) => {
@@ -295,8 +311,10 @@ export function initThreeViewer() {
     )
   }
 
-  // Завантажуємо першу модель
-  loadModel(MODELS_DATA[0])
+  // Завантажуємо першу модель зі списку
+  if (activeModelsList.length > 0) {
+    loadModel(activeModelsList[0])
+  }
 
   // 6. Обробка перемикання табів
   const tabs = document.querySelectorAll('.model-select-tab')
@@ -306,9 +324,8 @@ export function initThreeViewer() {
       const current = e.currentTarget as HTMLElement
       current.classList.add('active')
       const modelId = current.getAttribute('data-model-id')
-      const target = MODELS_DATA.find((m) => m.id === modelId)
+      const target = activeModelsList.find((m) => m.id === modelId)
       if (target) {
-        // Оновлюємо опис
         const tagEl = document.getElementById('active-model-tag')
         const nameEl = document.getElementById('active-model-name')
         const subtitleEl = document.getElementById('active-model-subtitle')
@@ -325,16 +342,14 @@ export function initThreeViewer() {
   })
 
   // 7. Анімаційний цикл
-  let animId: number
   function animate() {
-    animId = requestAnimationFrame(animate)
+    requestAnimationFrame(animate)
     controls.update()
     renderer.render(scene, camera)
   }
   animate()
 
-  // 8. ResizeObserver реагує також на зміну ширини колонки через media query,
-  // а не лише на window.resize (зокрема під час зміни орієнтації екрана).
+  // 8. ResizeObserver
   function resizeRenderer() {
     const { width: newWidth, height: newHeight } = getViewportSize()
     camera.aspect = newWidth / newHeight

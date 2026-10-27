@@ -1,4 +1,4 @@
-import type { Product, Category, PageBlockData } from '../types/shop'
+import type { Category, PageBlockData } from '../types/shop'
 
 export const MOCK_CATEGORIES: Category[] = [
   {
@@ -43,158 +43,17 @@ export const MOCK_CATEGORIES: Category[] = [
   },
 ]
 
-export const MOCK_PRODUCTS: Product[] = [
-  {
-    id: 'prod-vader-01',
-    name: 'Дарт Вейдер (Arm Printing, Spongy Cape)',
-    slug: 'darth-vader-arm-printing',
-    sku: 'SW-VADER-ARM',
-    productType: 'minifigure',
-    series: 'Star Wars',
-    price: 850,
-    condition: 'new',
-    stock: 5,
-    isRare: true,
-    category: 'cat-star-wars',
-    imageUrl: 'https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?w=600&auto=format&fit=crop&q=80',
-    description:
-      'Ексклюзивна мініфігурка Дарта Вейдера з детальним принтом на руках та тканинним плащем нового зразка (Spongy Cape). Включає червоний світловий меч.',
-    isActive: true,
-  },
-  {
-    id: 'prod-luke-02',
-    name: 'Люк Скайвокер (Беспін, Світловий меч)',
-    slug: 'luke-skywalker-bespin',
-    sku: 'SW-LUKE-BESPIN',
-    productType: 'minifigure',
-    series: 'Star Wars',
-    price: 590,
-    condition: 'new',
-    stock: 8,
-    isRare: false,
-    category: 'cat-star-wars',
-    imageUrl: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=600&auto=format&fit=crop&q=80',
-    description:
-      'Люк Скайвокер у костюмі пісочного кольору з Хмарного міста Беспін із синім світловим мечем та двостороннім обличчям.',
-    isActive: true,
-  },
-  {
-    id: 'prod-rex-03',
-    name: 'Клон-капітан Рекс (Phase 2, Pauldron)',
-    slug: 'captain-rex-phase-2',
-    sku: 'SW-REX-P2',
-    productType: 'minifigure',
-    series: 'Star Wars',
-    price: 1450,
-    condition: 'new',
-    stock: 3,
-    isRare: true,
-    category: 'cat-star-wars',
-    imageUrl: 'https://images.unsplash.com/photo-1546776310-eef45dd6d63c?w=600&auto=format&fit=crop&q=80',
-    description:
-      'Культова колекційна фігурка Капітана Рекса 501-го легіону у броні Фази 2 з індивідуальними принтами та тканинним наплічником (pauldron).',
-    isActive: true,
-  },
-  {
-    id: 'prod-spidey-04',
-    name: 'Людина-Павук (Integrated Suit)',
-    slug: 'spider-man-integrated-suit',
-    sku: 'MV-SPIDEY-INT',
-    productType: 'minifigure',
-    series: 'Marvel Super Heroes',
-    price: 420,
-    condition: 'new',
-    stock: 12,
-    isRare: false,
-    category: 'cat-marvel',
-    imageUrl: 'https://images.unsplash.com/photo-1635805737707-575885ab0820?w=600&auto=format&fit=crop&q=80',
-    description:
-      'Людина-павук в інтегрованому костюмі із золотими вставками з кіновсесвіту Marvel ("Немає шляху додому").',
-    isActive: true,
-  },
-  {
-    id: 'prod-ironman-05',
-    name: 'Залізна Людина Mark 85',
-    slug: 'iron-man-mk85',
-    sku: 'MV-IRONMAN-85',
-    productType: 'minifigure',
-    series: 'Marvel Super Heroes',
-    price: 720,
-    condition: 'new',
-    stock: 6,
-    isRare: true,
-    category: 'cat-marvel',
-    imageUrl: 'https://images.unsplash.com/photo-1608889175123-8ee362201f81?w=600&auto=format&fit=crop&q=80',
-    description:
-      'Тоні Старк у нано-броні Mark 85 із двостороннім шоломом, принтом нано-реактора та енергетичними бластерами.',
-    isActive: true,
-  },
-  {
-    id: 'prod-knight-06',
-    name: 'Лицар Чорного Сокола (Black Falcon)',
-    slug: 'black-falcon-knight',
-    sku: 'CST-FALCON-01',
-    productType: 'minifigure',
-    series: 'Castle',
-    price: 380,
-    condition: 'new',
-    stock: 15,
-    isRare: false,
-    category: 'cat-classic',
-    imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop&q=80',
-    description:
-      'Класичний лицар фракції Чорного Сокола з оригінальним трикутним щитом, срібним мечем та закритим шоломом.',
-    isActive: true,
-  },
-  {
-    id: 'prod-saber-07',
-    name: 'Лазерний меч (Транс-Червоний + Металеве руківʼя)',
-    slug: 'lightsaber-trans-red',
-    sku: 'PART-SABER-RED',
-    productType: 'part',
-    series: 'Star Wars',
-    price: 65,
-    condition: 'new',
-    stock: 45,
-    isRare: false,
-    category: 'cat-parts',
-    color: 'Trans-Red / Metallic Silver',
-    partNumber: '30374 / 64567',
-    imageUrl: 'https://images.unsplash.com/photo-1599839575945-a9e5af0c3fa5?w=600&auto=format&fit=crop&q=80',
-    description:
-      'Оригінальний світловий меч ситха. Хромоване металеве руківʼя та яскравий прозоро-червоний клинок LEGO 4L.',
-    isActive: true,
-  },
-  {
-    id: 'prod-mando-08',
-    name: 'Шолом Мандалорця (Beskar Silver)',
-    slug: 'mandalorian-helmet-beskar',
-    sku: 'PART-HELMET-MANDO',
-    productType: 'part',
-    series: 'Star Wars',
-    price: 180,
-    condition: 'used',
-    stock: 10,
-    isRare: true,
-    category: 'cat-parts',
-    color: 'Metallic Silver',
-    partNumber: '67037',
-    imageUrl: 'https://images.unsplash.com/photo-1618336753974-aae8e04506aa?w=600&auto=format&fit=crop&q=80',
-    description:
-      'Оригінальний шолом Діна Джаріна з якісним Т-подібним принтом візора у кольорі Beskar Silver. Стан ідеальний, без подряпин.',
-    isActive: true,
-  },
-]
-
 export const MOCK_HOME_BLOCKS: PageBlockData[] = [
   {
     blockType: 'hero',
     heading: 'GromBricks — Всесвіт колекційних мініфігурок та деталей LEGO',
     subheading:
-      'Оригінальні деталі, рідкісні фігурки Star Wars, Marvel, Castle та кастомні елементи для ваших MOC-проєктів з доставкою по всій Україні.',
+      'Оригінальні деталі, рідкісні фігурки Star Wars, Marvel, Ninjago та кастомні елементи для ваших MOC-проєктів з доставкою по всій Україні.',
     badge: '🧱 100% Оригінал LEGO® • Сезонне оновлення',
-    secondaryButtonText: 'Приєднатися до Telegram',
-    secondaryButtonLink: 'https://t.me/grombricks',
+    primaryButtonText: '3D ЕКСПОЗИЦІЯ',
+    primaryButtonLink: '#models-3d',
+    secondaryButtonText: 'ПЕРЕВАГИ',
+    secondaryButtonLink: '#why-us',
     imageUrl: '/images/hero-bg.webp',
   },
   {
@@ -226,9 +85,70 @@ export const MOCK_HOME_BLOCKS: PageBlockData[] = [
   },
   {
     blockType: 'modelViewer',
+    badge: '3D ЕКСПОЗИЦІЯ',
+    title: 'Інтерактивна 3D Вітрина Мініфігурок',
+    subtitle:
+      'Обертайте фігурку на 360°, масштабуйте та роздивляйтесь деталі зі студійним освітленням',
+    models: [
+      {
+        modelId: 'golden_ninja',
+        name: 'Golden Ninja (Lloyd)',
+        subtitle: 'Колекційна серія Ninjago Legacy',
+        objPath: '/models/golden_ninja.obj',
+        mtlPath: '/models/golden_ninja.mtl',
+        tag: 'Ексклюзив ★',
+        description:
+          'Легендарний Золотий Ніндзя Ллойд у виняткових золотих обладунках із детальним тисненням. Модель з високою деталізацією кожного елемента.',
+      },
+      {
+        modelId: 'kai_jungle',
+        name: 'Kai Jungle Robes',
+        subtitle: 'Ninjago: Tournament of Elements',
+        objPath: '/models/kai_jungle.obj',
+        mtlPath: '/models/kai_jungle.mtl',
+        tag: 'Популярне',
+        description:
+          'Кай у спеціальному бойовому кімоно для джунглів зі стрічками та традиційними вогняними емблемами клану Вогню.',
+      },
+      {
+        modelId: 'cole_jungle',
+        name: 'Cole Jungle Robes',
+        subtitle: 'Ninjago: Tournament of Elements',
+        objPath: '/models/cole_jungle.obj',
+        mtlPath: '/models/cole_jungle.mtl',
+        tag: 'Рідкісне',
+        description:
+          'Коул — майстер стихії Землі в міцному спорядженні для експедицій у тропічні джунглі із захисними накладками.',
+      },
+    ],
   },
   {
     blockType: 'categoryCards',
+    badge: 'НАПРЯМКИ',
+    title: 'Оберіть напрям',
+    items: [
+      {
+        title: 'Мініфігурки',
+        image: '/images/figures.jpg',
+        href: '#',
+      },
+      {
+        title: 'Деталі та Зброя',
+        image: '/images/details.jpg',
+        href: '#',
+      },
+      {
+        title: 'Star Wars & Ninjago',
+        image: '/images/starwars_wall.jpg',
+        href: '#',
+      },
+      {
+        title: 'Рідкісні Раритети',
+        image: '/images/LEGO-San-Diego-Comic-Con-Exclusives.jpg',
+        href: '#',
+        isRare: true,
+      },
+    ],
   },
   {
     blockType: 'cta',

@@ -8,7 +8,7 @@ export const seedDatabaseHandler: PayloadHandler = async (req) => {
   const payload = req.payload
 
   try {
-    // 1. Створюємо або знаходимо базові категорії
+    // 1. Створюємо або знаходимо базові категорії напрямків
     const categoriesData = [
       {
         title: 'Star Wars',
@@ -42,8 +42,6 @@ export const seedDatabaseHandler: PayloadHandler = async (req) => {
       },
     ]
 
-    const createdCategories: Record<string, number> = {}
-
     for (const cat of categoriesData) {
       const existing = await payload.find({
         collection: 'categories',
@@ -51,169 +49,135 @@ export const seedDatabaseHandler: PayloadHandler = async (req) => {
         limit: 1,
       })
 
-      if (existing.docs.length > 0) {
-        createdCategories[cat.slug] = Number(existing.docs[0].id)
-      } else {
-        const doc = await payload.create({
+      if (existing.docs.length === 0) {
+        await payload.create({
           collection: 'categories',
           data: cat,
         })
-        createdCategories[cat.slug] = Number(doc.id)
       }
     }
 
-    // 2. Створюємо товари
-    const productsData = [
-      {
-        name: 'Дарт Вейдер (Arm Printing, Spongy Cape)',
-        slug: 'darth-vader-arm-printing',
-        sku: 'SW-VADER-ARM',
-        productType: 'minifigure' as const,
-        series: 'Star Wars' as const,
-        price: 850,
-        condition: 'new' as const,
-        stock: 5,
-        isRare: true,
-        category: createdCategories['star-wars'],
-        imageUrl: '/images/vader.webp',
-        description:
-          'Ексклюзивна мініфігурка Дарта Вейдера з детальним принтом на руках та тканинним плащем нового зразка.',
-        isActive: true,
-      },
-      {
-        name: 'Люк Скайвокер (Беспін, Світловий меч)',
-        slug: 'luke-skywalker-bespin',
-        sku: 'SW-LUKE-BESPIN',
-        productType: 'minifigure' as const,
-        series: 'Star Wars' as const,
-        price: 590,
-        condition: 'new' as const,
-        stock: 8,
-        isRare: false,
-        category: createdCategories['star-wars'],
-        imageUrl: '/images/luke.webp',
-        description:
-          'Люк Скайвокер у костюмі з Хмарного міста Беспін із синім світловим мечем.',
-        isActive: true,
-      },
-      {
-        name: 'Клон-капітан Рекс (Phase 2, Pauldron)',
-        slug: 'captain-rex-phase-2',
-        sku: 'SW-REX-P2',
-        productType: 'minifigure' as const,
-        series: 'Star Wars' as const,
-        price: 1450,
-        condition: 'new' as const,
-        stock: 3,
-        isRare: true,
-        category: createdCategories['star-wars'],
-        imageUrl: '/images/rex.webp',
-        description:
-          'Культова колекційна фігурка Капітана Рекса у броні Фази 2 з індивідуальними принтами та наплічником.',
-        isActive: true,
-      },
-      {
-        name: 'Людина-Павук (Integrated Suit)',
-        slug: 'spider-man-integrated-suit',
-        sku: 'MV-SPIDEY-INT',
-        productType: 'minifigure' as const,
-        series: 'Marvel Super Heroes' as const,
-        price: 420,
-        condition: 'new' as const,
-        stock: 12,
-        isRare: false,
-        category: createdCategories['marvel'],
-        imageUrl: '/images/spiderman.webp',
-        description: 'Людина-павук в інтегрованому костюмі із золотими вставками з кіновсесвіту Marvel.',
-        isActive: true,
-      },
-      {
-        name: 'Залізна Людина Mark 85',
-        slug: 'iron-man-mk85',
-        sku: 'MV-IRONMAN-85',
-        productType: 'minifigure' as const,
-        series: 'Marvel Super Heroes' as const,
-        price: 720,
-        condition: 'new' as const,
-        stock: 6,
-        isRare: true,
-        category: createdCategories['marvel'],
-        imageUrl: '/images/ironman.webp',
-        description: 'Тоні Старк у фінальній броні Mark 85 із двостороннім шоломом та енергетичними бластерами.',
-        isActive: true,
-      },
-      {
-        name: 'Лицар Чорного Сокола (Black Falcon)',
-        slug: 'black-falcon-knight',
-        sku: 'CST-FALCON-01',
-        productType: 'minifigure' as const,
-        series: 'Castle' as const,
-        price: 380,
-        condition: 'new' as const,
-        stock: 15,
-        isRare: false,
-        category: createdCategories['classic'],
-        imageUrl: '/images/knight.webp',
-        description: 'Класичний лицар Чорного Сокола зі щитом, мечем та срібним шоломом.',
-        isActive: true,
-      },
-      {
-        name: 'Лазерний меч (Транс-Червоний клинок + Металеве руківʼя)',
-        slug: 'lightsaber-trans-red',
-        sku: 'PART-SABER-RED',
-        productType: 'part' as const,
-        series: 'Star Wars' as const,
-        price: 65,
-        condition: 'new' as const,
-        stock: 45,
-        isRare: false,
-        category: createdCategories['parts'],
-        color: 'Trans-Red / Metallic',
-        partNumber: '30374 / 64567',
-        imageUrl: '/images/saber-red.webp',
-        description: 'Оригінальний світловий меч ситха. Хромоване/металеве руківʼя та яскравий прозоро-червоний клинок.',
-        isActive: true,
-      },
-      {
-        name: 'Шолом Мандалорця (Beskar Silver)',
-        slug: 'mandalorian-helmet-beskar',
-        sku: 'PART-HELMET-MANDO',
-        productType: 'part' as const,
-        series: 'Star Wars' as const,
-        price: 180,
-        condition: 'new' as const,
-        stock: 10,
-        isRare: true,
-        category: createdCategories['parts'],
-        color: 'Metallic Silver',
-        partNumber: '67037',
-        imageUrl: '/images/mando-helmet.webp',
-        description: 'Оригінальний шолом Діна Джаріна з якісним принтом візора у кольорі Beskar Silver.',
-        isActive: true,
-      },
-    ]
-
-    for (const prod of productsData) {
-      const existing = await payload.find({
-        collection: 'products',
-        where: { sku: { equals: prod.sku } },
-        limit: 1,
-      })
-
-      if (existing.docs.length === 0) {
-        await payload.create({
-          collection: 'products',
-          data: prod,
-        })
-      }
-    }
-
-    // 3. Створюємо головну сторінку з динамічними блоками (Pages)
+    // 2. Створюємо головну сторінку лендінгу з динамічними блоками (Pages)
     const existingHomePage = await payload.find({
       collection: 'pages',
       where: { slug: { equals: 'home' } },
       limit: 1,
     })
+
+    const homePageLayout = [
+      {
+        blockType: 'hero',
+        heading: 'ЕКСКЛЮЗИВНІ ФІГУРКИ ТА ДЕТАЛІ LEGO',
+        subheading:
+          'Колекційні мініфігурки Star Wars, Ninjago, Marvel та унікальні будівельні деталі в Україні. Перевірена якість та оригінал.',
+        badge: '🧱 ПРЕМІАЛЬНІ LEGO КОЛЕКЦІЇ',
+        primaryButtonText: '3D ЕКСПОЗИЦІЯ',
+        primaryButtonLink: '#models-3d',
+        secondaryButtonText: 'ПЕРЕВАГИ',
+        secondaryButtonLink: '#why-us',
+        imageUrl: '/images/hero-bg.webp',
+      },
+      {
+        blockType: 'features',
+        title: 'Чому обирають GromBricks',
+        subtitle: 'Ми знаємо справжню цінність кожної мініфігурки та гарантуємо музейний стан кожної деталі',
+        items: [
+          {
+            icon: 'shield',
+            title: '100% Оригінал',
+            description: 'Тільки аутентичні деталі LEGO без підробок.',
+          },
+          {
+            icon: 'truck',
+            title: 'Швидка відправка',
+            description: 'Відправлення в день замовлення по всій Україні.',
+          },
+          {
+            icon: 'sparkles',
+            title: 'Рідкісні екземпляри',
+            description: 'Фігурки з раритетних та ексклюзивних наборів.',
+          },
+        ],
+      },
+      {
+        blockType: 'modelViewer',
+        badge: '3D ЕКСПОЗИЦІЯ',
+        title: 'Інтерактивна 3D Вітрина Мініфігурок',
+        subtitle:
+          'Обертайте фігурку на 360°, масштабуйте та роздивляйтесь деталі зі студійним освітленням',
+        models: [
+          {
+            modelId: 'golden_ninja',
+            name: 'Golden Ninja (Lloyd)',
+            subtitle: 'Колекційна серія Ninjago Legacy',
+            tag: 'Ексклюзив ★',
+            description:
+              'Легендарний Золотий Ніндзя Ллойд у виняткових золотих обладунках із детальним тисненням. Модель з високою деталізацією кожного елемента.',
+            objPath: '/models/golden_ninja.obj',
+            mtlPath: '/models/golden_ninja.mtl',
+          },
+          {
+            modelId: 'kai_jungle',
+            name: 'Kai Jungle Robes',
+            subtitle: 'Ninjago: Tournament of Elements',
+            tag: 'Популярне',
+            description:
+              'Кай у спеціальному бойовому кімоно для джунглів зі стрічками та традиційними вогняними емблемами клану Вогню.',
+            objPath: '/models/kai_jungle.obj',
+            mtlPath: '/models/kai_jungle.mtl',
+          },
+          {
+            modelId: 'cole_jungle',
+            name: 'Cole Jungle Robes',
+            subtitle: 'Ninjago: Tournament of Elements',
+            tag: 'Рідкісне',
+            description:
+              'Коул — майстер стихії Землі в міцному спорядженні для експедицій у тропічні джунглі із захисними накладками.',
+            objPath: '/models/cole_jungle.obj',
+            mtlPath: '/models/cole_jungle.mtl',
+          },
+        ],
+      },
+      {
+        blockType: 'categoryCards',
+        badge: 'НАПРЯМКИ',
+        title: 'Оберіть напрям',
+        items: [
+          {
+            title: 'Мініфігурки',
+            image: '/images/figures.jpg',
+            href: '#',
+            isRare: false,
+          },
+          {
+            title: 'Деталі та Зброя',
+            image: '/images/details.jpg',
+            href: '#',
+            isRare: false,
+          },
+          {
+            title: 'Star Wars & Ninjago',
+            image: '/images/starwars_wall.jpg',
+            href: '#',
+            isRare: false,
+          },
+          {
+            title: 'Рідкісні Раритети',
+            image: '/images/LEGO-San-Diego-Comic-Con-Exclusives.jpg',
+            href: '#',
+            isRare: true,
+          },
+        ],
+      },
+      {
+        blockType: 'cta',
+        title: 'Першими бачите новинки',
+        description:
+          'Підпишіться на канал: ексклюзивні релізи, розіграші та швидкий викуп рідкісних деталей.',
+        buttonText: 'ПРИЄДНАТИСЯ В TELEGRAM',
+        buttonLink: 'https://t.me/grombricks',
+      },
+    ]
 
     if (existingHomePage.docs.length === 0) {
       await payload.create({
@@ -222,81 +186,23 @@ export const seedDatabaseHandler: PayloadHandler = async (req) => {
           title: 'Головна сторінка GromBricks',
           slug: 'home',
           isPublished: true,
-          layout: [
-            {
-              blockType: 'hero',
-              heading: 'Всесвіт оригінальних мініфігурок та деталей LEGO',
-              subheading:
-                'Ексклюзивні фігурки Star Wars, Marvel, Ninjago та класичні деталі для ваших MOC-творінь. Доставка по всій Україні.',
-              badge: '✨ Нові надходження жовтня',
-              primaryButtonText: 'Перейти до каталогу',
-              primaryButtonLink: '/catalog',
-              secondaryButtonText: 'Рідкісні екземпляри',
-              secondaryButtonLink: '/catalog?onlyRare=true',
-              imageUrl: '/images/hero-bg.webp',
-            },
-            {
-              blockType: 'features',
-              title: 'Переваги магазину GromBricks',
-              subtitle: 'Ми дбаємо про кожну деталь вашої колекції',
-              items: [
-                {
-                  icon: 'shield',
-                  title: '100% Оригінал LEGO®',
-                  description: 'Ретельна перевірка логотипів та стану кожного елемента.',
-                },
-                {
-                  icon: 'sparkles',
-                  title: 'Рідкісні фігурки',
-                  description: 'Колекційні видання з Comic-Con, старих наборів та обмежених тиражів.',
-                },
-                {
-                  icon: 'package',
-                  title: 'Дбайливе пакування',
-                  description: 'Індивідуальні пакети, картонні коробки та захист від подряпин.',
-                },
-                {
-                  icon: 'truck',
-                  title: 'Швидка доставка',
-                  description: 'Нова Пошта та Укрпошта по всій Україні з трек-номером.',
-                },
-              ],
-            },
-            {
-              blockType: 'banner',
-              title: 'Знижка 15% на серію Star Wars!',
-              description:
-                'Зберіть власну армію клонів або замовте легендарного Дарта Вейдера за спеціальною ціною.',
-              ctaText: 'Дивитися пропозиції',
-              ctaLink: '/catalog?series=Star+Wars',
-              variant: 'legoYellow',
-            },
-            {
-              blockType: 'productGrid',
-              title: 'Популярні фігурки та деталі',
-              subtitle: 'Найкращі пропозиції нашого магазину',
-              filterType: 'all',
-              limit: 8,
-              showViewAll: true,
-            },
-            {
-              blockType: 'cta',
-              title: 'Не знайшли потрібної деталі?',
-              description:
-                'Ми допоможемо замовити рідкісну деталь або фігурку за офіційним LEGO Design ID. Приєднуйтесь до нашого Telegram-каналу!',
-              buttonText: 'Приєднатися до спільноти',
-              buttonLink: 'https://t.me/grombricks',
-            },
-          ],
+          layout: homePageLayout as any,
+        },
+      })
+    } else {
+      await payload.update({
+        collection: 'pages',
+        id: existingHomePage.docs[0].id,
+        data: {
+          layout: homePageLayout as any,
         },
       })
     }
 
     return Response.json({
       success: true,
-      message: 'Базу даних успішно наповнено початковими даними GromBricks.',
+      message: 'Базу даних успішно наповнено початковими даними лендінгу GromBricks.',
       categoriesCount: categoriesData.length,
-      productsCount: productsData.length,
       timestamp: new Date().toISOString(),
     })
   } catch (error) {
