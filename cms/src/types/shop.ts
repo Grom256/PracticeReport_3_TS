@@ -159,8 +159,8 @@ export type UIState<T> =
  * Строгий контракт клієнт-серверного обміну
  */
 export type ApiResponse<T> =
-  | { success: true; data: T; message?: string }
-  | { success: false; error: string; statusCode?: number }
+  | { success: true; data: T; message?: string; timestamp?: string }
+  | { success: false; error: string; statusCode?: number; timestamp?: string }
 
 // ==========================================
 // 3. БАЗОВІ СУТНОСТІ CMS ТА ВІТРИНИ
@@ -179,11 +179,14 @@ export interface MediaItem {
 
 export interface Category {
   id: ID
-  name: string
+  name?: string
+  title?: string
   slug: Slug
   description?: string
   badgeText?: string
+  badge?: string
   icon?: string
+  iconName?: string
   order?: number
 }
 
