@@ -1,4 +1,5 @@
 import type { PageBlock } from '../types.ts'
+import { DJANGO_SHOP_URL } from '../api.ts'
 
 export function renderHeroBlock(block: PageBlock): string {
   const heading = block.heading || 'ЕКСКЛЮЗИВНІ ФІГУРКИ ТА ДЕТАЛІ LEGO'
@@ -13,7 +14,7 @@ export function renderHeroBlock(block: PageBlock): string {
   const primaryText = block.primaryButtonText || '3D ЕКСПОЗИЦІЯ'
   const primaryLink = block.primaryButtonLink || '#models-3d'
   const secondaryText = block.secondaryButtonText || 'ПЕРЕВАГИ'
-  const secondaryLink = block.secondaryButtonLink || '#why-us'
+  const rawSecondaryLink = block.secondaryButtonLink || '#why-us'
   const imageUrl = block.imageUrl || '/images/hero-bg.webp'
 
   // Визначаємо іконки для основної кнопки
@@ -27,10 +28,13 @@ export function renderHeroBlock(block: PageBlock): string {
 
   // Визначаємо іконки та класи для додаткової кнопки
   const secondaryLower = secondaryText.toLowerCase()
-  const isSecondaryAnchor = secondaryLink.startsWith('#')
+  const isSecondaryAnchor = rawSecondaryLink.startsWith('#')
   const isSecondaryDjango =
-    !isSecondaryAnchor && (secondaryLink === '#' || secondaryLower.includes('магазин'))
+    !isSecondaryAnchor && (rawSecondaryLink === '#' || secondaryLower.includes('магазин'))
+  const secondaryLink = isSecondaryDjango ? DJANGO_SHOP_URL : rawSecondaryLink
   const secondaryClass = `btn btn-secondary ${isSecondaryDjango ? 'js-django-link' : ''}`
+  const isExternalSecondary = secondaryLink.startsWith('http')
+  const secondaryTargetAttr = isExternalSecondary ? 'target="_blank" rel="noopener noreferrer"' : ''
 
   const secondaryLeadingIcon = secondaryLower.includes('переваг')
     ? 'ri-shield-star-line'
@@ -66,7 +70,7 @@ export function renderHeroBlock(block: PageBlock): string {
               <span>${primaryText}</span>
               <i class="ri-arrow-down-line"></i>
             </a>
-            <a href="${secondaryLink}" class="${secondaryClass}">
+            <a href="${secondaryLink}" ${secondaryTargetAttr} class="${secondaryClass}">
               <i class="${secondaryLeadingIcon}"></i>
               <span>${secondaryText}</span>
               <i class="${secondaryTrailingIcon}"></i>

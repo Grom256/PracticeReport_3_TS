@@ -1,4 +1,5 @@
 import type { PageBlock } from '../types.ts'
+import { DJANGO_SHOP_URL } from '../api.ts'
 
 export function renderCtaBlock(block: PageBlock): string {
   const title = block.title || 'Першими бачите новинки'
@@ -30,7 +31,9 @@ export function renderCtaBlock(block: PageBlock): string {
         </div>
         <div class="telegram-callout-action">
           <a
-            href="#"
+            href="${DJANGO_SHOP_URL}"
+            target="_blank"
+            rel="noopener noreferrer"
             class="btn btn-primary js-django-link"
           >
             <span>ЗНАЙТИ СВОЮ</span>

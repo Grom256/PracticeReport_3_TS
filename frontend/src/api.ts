@@ -11,6 +11,7 @@ export const API_BASE = (
 ).replace(/\/+$/, '')
 
 export const CMS_ADMIN_URL = 'https://practice-report-3-ts.vercel.app/admin'
+export const DJANGO_SHOP_URL = 'https://grombricks.onrender.com/'
 
 /**
  * Отримання наскрізних даних сайту (/api/common)
@@ -167,25 +168,25 @@ export async function fetchPageData(path: string = '/'): Promise<PageResponse> {
             items: [
               {
                 title: 'Мініфігурки',
-                href: '#',
+                href: DJANGO_SHOP_URL,
                 image: '/images/figures.jpg',
                 isRare: false,
               },
               {
                 title: 'Деталі та Зброя',
-                href: '#',
+                href: DJANGO_SHOP_URL,
                 image: '/images/details.jpg',
                 isRare: false,
               },
               {
                 title: 'Star Wars & Ninjago',
-                href: '#',
+                href: DJANGO_SHOP_URL,
                 image: '/images/starwars_wall.jpg',
                 isRare: false,
               },
               {
                 title: 'Рідкісні Раритети',
-                href: '#',
+                href: DJANGO_SHOP_URL,
                 image: '/images/LEGO-San-Diego-Comic-Con-Exclusives.jpg',
                 isRare: true,
               },

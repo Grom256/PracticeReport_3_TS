@@ -1,27 +1,28 @@
 import type { PageBlock, CategoryCardItem } from '../types.ts'
+import { DJANGO_SHOP_URL } from '../api.ts'
 
 const DEFAULT_CATEGORIES: CategoryCardItem[] = [
   {
     title: 'Мініфігурки',
-    href: '#',
+    href: DJANGO_SHOP_URL,
     image: '/images/figures.jpg',
     isRare: false,
   },
   {
     title: 'Деталі та Зброя',
-    href: '#',
+    href: DJANGO_SHOP_URL,
     image: '/images/details.jpg',
     isRare: false,
   },
   {
     title: 'Star Wars & Ninjago',
-    href: '#',
+    href: DJANGO_SHOP_URL,
     image: '/images/starwars_wall.jpg',
     isRare: false,
   },
   {
     title: 'Рідкісні Раритети',
-    href: '#',
+    href: DJANGO_SHOP_URL,
     image: '/images/LEGO-San-Diego-Comic-Con-Exclusives.jpg',
     isRare: true,
   },
@@ -37,8 +38,14 @@ export function renderCategoryCardsBlock(block?: PageBlock): string {
 
   const cardsHtml = categories
     .map(
-      (cat) => `
-      <a href="${cat.href || '#'}" class="category-card js-django-link ${cat.isRare ? 'rare' : ''}">
+      (cat) => {
+        const rawHref = cat.href?.trim()
+        const href = !rawHref || rawHref === '#' ? DJANGO_SHOP_URL : rawHref
+        const isExternal = href.startsWith('http')
+        const targetAttr = isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''
+
+        return `
+      <a href="${href}" ${targetAttr} class="category-card js-django-link ${cat.isRare ? 'rare' : ''}">
         <div class="category-card-bg-wrap">
           <img src="${cat.image}" alt="${cat.title}" class="category-card-img" loading="lazy" />
         </div>
@@ -50,7 +57,8 @@ export function renderCategoryCardsBlock(block?: PageBlock): string {
           </div>
         </div>
       </a>
-    `,
+    `
+      },
     )
     .join('')
 

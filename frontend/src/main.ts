@@ -1,4 +1,4 @@
-import { CMS_ADMIN_URL, fetchCommonData, fetchPageData } from './api.ts'
+import { CMS_ADMIN_URL, DJANGO_SHOP_URL, fetchCommonData, fetchPageData } from './api.ts'
 import { renderBlocks } from './blocks/renderBlocks.ts'
 import { initThreeViewer } from './blocks/modelViewer.ts'
 import type { CommonData } from './types.ts'
@@ -247,7 +247,7 @@ function renderHeader(header: CommonData['header']) {
       </nav>
 
       <div class="header-actions">
-        <a href="#" class="btn-shop js-django-link" title="Перейти у повноцінний магазин">
+        <a href="${DJANGO_SHOP_URL}" target="_blank" rel="noopener noreferrer" class="btn-shop js-django-link" title="Перейти у повноцінний магазин">
           <i class="ri-store-2-line"></i>
           <span>МАГАЗИН</span>
           <i class="ri-arrow-right-up-line"></i>
@@ -261,7 +261,7 @@ function renderHeader(header: CommonData['header']) {
     <!-- Мобільне меню навігації -->
     <div id="mobile-nav-drawer" class="mobile-nav-drawer">
       ${mobileNavHtml}
-      <a href="#" class="mobile-nav-link js-django-link" style="color:var(--gold-light);">
+      <a href="${DJANGO_SHOP_URL}" target="_blank" rel="noopener noreferrer" class="mobile-nav-link js-django-link" style="color:var(--gold-light);">
         <i class="ri-store-2-line"></i> МАГАЗИН <i class="ri-arrow-right-up-line"></i>
       </a>
       <a href="${telegramUrl}" target="_blank" rel="noopener noreferrer" class="mobile-nav-link" style="color:var(--gold-accent);">
@@ -345,7 +345,7 @@ function renderFooter(footer: CommonData['footer']) {
           <li><a href="#why-us">Чому обирають нас</a></li>
           <li><a href="#models-3d">3D Експозиція фігурок</a></li>
           <li><a href="#directions">Напрямки LEGO</a></li>
-          <li><a href="#" class="js-django-link" style="color:#f0cf7a;">Повноцінний магазин <i class="ri-arrow-right-up-line"></i></a></li>
+          <li><a href="${DJANGO_SHOP_URL}" target="_blank" rel="noopener noreferrer" class="js-django-link" style="color:#f0cf7a;">Повноцінний магазин <i class="ri-arrow-right-up-line"></i></a></li>
         </ul>
       </div>
 
@@ -390,13 +390,13 @@ function setupSmoothScrolling() {
 }
 
 function setupDjangoLinks() {
-  document.querySelectorAll('.js-django-link').forEach((link) => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault()
-      alert(
-        '🔗 Посилання на повноцінний інтернет-магазин буде активовано після його деплою на хостинг!',
-      )
-    })
+  document.querySelectorAll<HTMLAnchorElement>('.js-django-link').forEach((link) => {
+    const currentHref = link.getAttribute('href')
+    if (!currentHref || currentHref === '#') {
+      link.href = DJANGO_SHOP_URL
+    }
+    link.target = '_blank'
+    link.rel = 'noopener noreferrer'
   })
 }
 
