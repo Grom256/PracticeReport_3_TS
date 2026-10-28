@@ -49,7 +49,7 @@ export const MOCK_HOME_BLOCKS: PageBlockData[] = [
     heading: 'GromBricks — Всесвіт колекційних мініфігурок та деталей LEGO',
     subheading:
       'Оригінальні деталі, рідкісні фігурки Star Wars, Marvel, Ninjago та кастомні елементи для ваших MOC-проєктів з доставкою по всій Україні.',
-    badge: '🧱 100% Оригінал LEGO® • Сезонне оновлення',
+    badge: 'ПРЕМІАЛЬНІ LEGO КОЛЕКЦІЇ',
     primaryButtonText: '3D ЕКСПОЗИЦІЯ',
     primaryButtonLink: '#models-3d',
     secondaryButtonText: 'ПЕРЕВАГИ',

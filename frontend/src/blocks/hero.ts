@@ -1,16 +1,46 @@
 import type { PageBlock } from '../types.ts'
 
 export function renderHeroBlock(block: PageBlock): string {
-  const heading = block.heading || 'Фігурки з характером'
+  const heading = block.heading || 'ЕКСКЛЮЗИВНІ ФІГУРКИ ТА ДЕТАЛІ LEGO'
   const subheading =
     block.subheading ||
-    'Фігурки та деталі LEGO для колекціонерів і майстрів. Ретельно відібрані позиції, які варто мати.'
-  const badge = block.badge || 'PREMIUM LEGO COLLECTIBLES'
-  const primaryText = block.primaryButtonText || 'ЧОМУ ОБИРАЮТЬ НАС'
-  const primaryLink = block.primaryButtonLink || '#why-us'
-  const secondaryText = block.secondaryButtonText || 'ПЕРЕЙТИ В МАГАЗИН'
-  const secondaryLink = block.secondaryButtonLink || '#'
+    'Колекційні мініфігурки Star Wars, Ninjago, Marvel та унікальні будівельні деталі в Україні. Перевірена якість та оригінал.'
+
+  // Прибираємо емодзі якщо є на початку
+  const rawBadge = block.badge || 'ПРЕМІАЛЬНІ LEGO КОЛЕКЦІЇ'
+  const badge = rawBadge.replace(/^[🧱🔥✨\s]+/, '').trim()
+
+  const primaryText = block.primaryButtonText || '3D ЕКСПОЗИЦІЯ'
+  const primaryLink = block.primaryButtonLink || '#models-3d'
+  const secondaryText = block.secondaryButtonText || 'ПЕРЕВАГИ'
+  const secondaryLink = block.secondaryButtonLink || '#why-us'
   const imageUrl = block.imageUrl || '/images/hero-bg.webp'
+
+  // Визначаємо іконки для основної кнопки
+  const primaryLower = primaryText.toLowerCase()
+  const primaryLeadingIcon =
+    primaryLower.includes('3d') || primaryLower.includes('модел') || primaryLower.includes('експозиц')
+      ? 'ri-cube-line'
+      : primaryLower.includes('переваг')
+      ? 'ri-shield-star-line'
+      : 'ri-arrow-down-line'
+
+  // Визначаємо іконки та класи для додаткової кнопки
+  const secondaryLower = secondaryText.toLowerCase()
+  const isSecondaryAnchor = secondaryLink.startsWith('#')
+  const isSecondaryDjango =
+    !isSecondaryAnchor && (secondaryLink === '#' || secondaryLower.includes('магазин'))
+  const secondaryClass = `btn btn-secondary ${isSecondaryDjango ? 'js-django-link' : ''}`
+
+  const secondaryLeadingIcon = secondaryLower.includes('переваг')
+    ? 'ri-shield-star-line'
+    : secondaryLower.includes('3d')
+    ? 'ri-cube-line'
+    : secondaryLower.includes('магазин')
+    ? 'ri-store-2-line'
+    : 'ri-sparkling-line'
+
+  const secondaryTrailingIcon = isSecondaryAnchor ? 'ri-arrow-down-line' : 'ri-arrow-right-up-line'
 
   return `
     <section class="hero-section">
@@ -32,13 +62,14 @@ export function renderHeroBlock(block: PageBlock): string {
 
           <div class="hero-actions-row">
             <a href="${primaryLink}" class="btn btn-primary">
+              <i class="${primaryLeadingIcon}"></i>
               <span>${primaryText}</span>
               <i class="ri-arrow-down-line"></i>
             </a>
-            <a href="${secondaryLink}" class="btn btn-secondary js-django-link">
-              <i class="ri-store-2-line"></i>
+            <a href="${secondaryLink}" class="${secondaryClass}">
+              <i class="${secondaryLeadingIcon}"></i>
               <span>${secondaryText}</span>
-              <i class="ri-arrow-right-up-line"></i>
+              <i class="${secondaryTrailingIcon}"></i>
             </a>
             <a href="https://t.me/grombricks" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
               <i class="ri-telegram-fill"></i>

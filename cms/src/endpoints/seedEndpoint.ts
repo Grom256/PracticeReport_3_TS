@@ -70,7 +70,7 @@ export const seedDatabaseHandler: PayloadHandler = async (req) => {
         heading: 'ЕКСКЛЮЗИВНІ ФІГУРКИ ТА ДЕТАЛІ LEGO',
         subheading:
           'Колекційні мініфігурки Star Wars, Ninjago, Marvel та унікальні будівельні деталі в Україні. Перевірена якість та оригінал.',
-        badge: '🧱 ПРЕМІАЛЬНІ LEGO КОЛЕКЦІЇ',
+        badge: 'ПРЕМІАЛЬНІ LEGO КОЛЕКЦІЇ',
         primaryButtonText: '3D ЕКСПОЗИЦІЯ',
         primaryButtonLink: '#models-3d',
         secondaryButtonText: 'ПЕРЕВАГИ',

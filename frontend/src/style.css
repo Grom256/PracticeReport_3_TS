@@ -659,9 +659,9 @@ button, input, select, textarea {
   margin: 0;
   font-family: var(--font-heading);
   font-weight: 800;
-  font-size: 64px;
-  line-height: 1.08;
-  letter-spacing: -0.03em;
+  font-size: clamp(34px, 3.6vw, 46px);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
   color: var(--text-white);
 }
 
@@ -723,7 +723,7 @@ button, input, select, textarea {
   }
 
   .hero-heading {
-    font-size: clamp(30px, 8.5vw, 42px);
+    font-size: clamp(24px, 6vw, 32px);
   }
 
   .hero-description {
@@ -3018,7 +3018,7 @@ button, input, select, textarea {
 }
 
 /* ==========================================================================
-   Content Pages (Текстові сторінки, створені в CMS) & Breadcrumbs
+   Content Pages (РўРµРєСЃС‚РѕРІС– СЃС‚РѕСЂС–РЅРєРё, СЃС‚РІРѕСЂРµРЅС– РІ CMS) & Breadcrumbs
    ========================================================================== */
 
 .page-breadcrumbs {
