@@ -10,9 +10,7 @@ export const API_BASE = (
   (import.meta.env.DEV ? 'http://localhost:3000' : 'https://practice-report-3-ts.vercel.app')
 ).replace(/\/+$/, '')
 
-export const CMS_ADMIN_URL = import.meta.env.DEV
-  ? 'http://localhost:3000/admin'
-  : 'https://practice-report-3-ts.vercel.app/admin'
+export const CMS_ADMIN_URL = 'https://practice-report-3-ts.vercel.app/admin'
 
 /**
  * Отримання наскрізних даних сайту (/api/common)
