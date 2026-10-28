@@ -4,6 +4,7 @@ import { ModelViewerBlock } from './ModelViewer'
 import { CategoryCardsBlock } from './CategoryCards'
 import { BannerBlock } from './Banner'
 import { CallToActionBlock } from './CallToAction'
+import { TextBlock } from './TextBlock'
 
 export {
   HeroBlock,
@@ -12,6 +13,7 @@ export {
   CategoryCardsBlock,
   BannerBlock,
   CallToActionBlock,
+  TextBlock,
 }
 
 export const PageBlocks = [
@@ -21,4 +23,6 @@ export const PageBlocks = [
   CategoryCardsBlock,
   BannerBlock,
   CallToActionBlock,
+  TextBlock,
 ]
+

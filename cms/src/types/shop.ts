@@ -50,6 +50,7 @@ export type BlockType =
   | 'categoryCards'
   | 'banner'
   | 'cta'
+  | 'text'
 
 export interface HeroBlockData {
   blockType: 'hero'
@@ -135,6 +136,16 @@ export interface CtaBlockData {
   buttonLink?: string
 }
 
+export interface TextBlockData {
+  blockType: 'text'
+  id?: string
+  badge?: string
+  title: string
+  subtitle?: string
+  content: string
+  highlightBox?: string
+}
+
 /**
  * Дискриміноване об'єднання (Discriminated Union) блоків лендінгу.
  * Поле 'blockType' слугує спільним дискримінантом для безпечного звуження типів (type narrowing).
@@ -146,6 +157,7 @@ export type PageBlockData =
   | CategoryCardsBlockData
   | BannerBlockData
   | CtaBlockData
+  | TextBlockData
 
 /**
  * Узагальнене дискриміноване об'єднання для представлення життєвого циклу UI

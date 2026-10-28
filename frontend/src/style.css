@@ -3016,3 +3016,235 @@ button, input, select, textarea {
     padding: 0 12px;
   }
 }
+
+/* ==========================================================================
+   Content Pages (Текстові сторінки, створені в CMS) & Breadcrumbs
+   ========================================================================== */
+
+.page-breadcrumbs {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 24px 24px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.breadcrumb-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  background: rgba(24, 46, 90, 0.45);
+  border: 1px solid var(--card-border);
+  color: var(--gold-light);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.breadcrumb-back-btn:hover {
+  background: rgba(230, 191, 85, 0.15);
+  border-color: var(--gold-accent);
+  color: #fff;
+  transform: translateX(-2px);
+}
+
+.breadcrumb-separator {
+  color: var(--text-subtle);
+}
+
+.breadcrumb-current {
+  color: var(--text-muted);
+}
+
+.content-page-section {
+  padding: 48px 24px 96px;
+}
+
+.content-page-container {
+  max-width: 880px;
+  margin: 0 auto;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 56px 48px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.content-page-header {
+  margin-bottom: 40px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(207, 214, 224, 0.12);
+}
+
+.content-page-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: clamp(24px, 3.5vw, 38px);
+  font-weight: 700;
+  color: var(--text-white);
+  line-height: 1.25;
+  margin: 12px 0 16px;
+}
+
+.content-page-subtitle {
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--gold-light);
+  font-weight: 500;
+}
+
+.content-page-body {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #cfd6e0;
+}
+
+.content-paragraph {
+  margin-bottom: 22px;
+}
+
+.content-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 20px 0 28px;
+}
+
+.content-list-item {
+  position: relative;
+  padding-left: 28px;
+  margin-bottom: 12px;
+}
+
+.content-list-item::before {
+  content: '?';
+  position: absolute;
+  left: 4px;
+  top: 0;
+  color: var(--gold-accent);
+  font-size: 13px;
+}
+
+.content-highlight-box {
+  margin: 36px 0 20px;
+  padding: 24px 28px;
+  background: rgba(230, 191, 85, 0.08);
+  border-left: 4px solid var(--gold-accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--text-white);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* ==========================================================================
+   Promo Banner Section
+   ========================================================================== */
+
+.promo-banner-section {
+  max-width: 1240px;
+  margin: 48px auto;
+  padding: 0 24px;
+}
+
+.promo-banner-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 36px 40px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+}
+
+.banner-variant-legoYellow .promo-banner-card {
+  background: linear-gradient(135deg, rgba(230, 191, 85, 0.14) 0%, rgba(7, 11, 22, 0.94) 100%);
+  border-color: var(--gold-border);
+}
+
+.banner-variant-darkBrick .promo-banner-card {
+  background: linear-gradient(135deg, rgba(24, 46, 90, 0.45) 0%, rgba(7, 11, 22, 0.94) 100%);
+  border-color: rgba(74, 122, 212, 0.4);
+}
+
+.banner-variant-accentRed .promo-banner-card {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.18) 0%, rgba(7, 11, 22, 0.94) 100%);
+  border-color: rgba(220, 38, 38, 0.4);
+}
+
+.promo-banner-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: clamp(20px, 2.5vw, 28px);
+  font-weight: 700;
+  color: var(--text-white);
+  margin: 10px 0;
+}
+
+.promo-banner-desc {
+  color: var(--text-muted);
+  font-size: 15px;
+  max-width: 640px;
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+   404 Not Found Page
+   ========================================================================== */
+
+.not-found-section {
+  padding: 100px 24px 140px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.not-found-card {
+  text-align: center;
+  max-width: 620px;
+  padding: 56px 40px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.not-found-code {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 84px;
+  font-weight: 800;
+  background: var(--gold-gradient-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.not-found-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 24px;
+  color: var(--text-white);
+  margin-bottom: 16px;
+}
+
+.not-found-desc {
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 36px;
+}
+
+@media (max-width: 768px) {
+  .content-page-container {
+    padding: 32px 20px;
+  }
+  .promo-banner-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 28px 20px;
+  }
+  .promo-banner-desc {
+    margin: 0 auto;
+  }
+}

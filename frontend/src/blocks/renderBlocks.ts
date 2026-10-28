@@ -4,6 +4,8 @@ import { renderCategoryCardsBlock } from './categoryCards.ts'
 import { renderModelViewerBlock } from './modelViewer.ts'
 import { renderCtaBlock } from './cta.ts'
 import { renderFeaturesBlock } from './features.ts'
+import { renderTextBlock } from './text.ts'
+import { renderBannerBlock } from './banner.ts'
 
 /**
  * Файл renderBlocks.ts
@@ -34,6 +36,12 @@ export function renderBlocks(blocks: PageBlock[]): string {
 
         case 'cta':
           return renderCtaBlock(block)
+
+        case 'text':
+          return renderTextBlock(block)
+
+        case 'banner':
+          return renderBannerBlock(block)
 
         default:
           console.warn(`Невідомий тип блоку: ${type}`)

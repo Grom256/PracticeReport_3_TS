@@ -15,6 +15,13 @@ export interface CategoryCardItem {
   isRare?: boolean
 }
 
+export interface FeatureItem {
+  icon?: 'shield' | 'truck' | 'sparkles' | 'package' | 'check' | string
+  badge?: string
+  title: string
+  description: string
+}
+
 export interface CommonData {
   header: {
     brandName: string

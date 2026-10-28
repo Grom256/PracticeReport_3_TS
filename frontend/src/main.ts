@@ -1,95 +1,249 @@
 import { CMS_ADMIN_URL, fetchCommonData, fetchPageData } from './api.ts'
 import { renderBlocks } from './blocks/renderBlocks.ts'
 import { initThreeViewer } from './blocks/modelViewer.ts'
+import type { CommonData } from './types.ts'
+
+let globalCommonData: CommonData | null = null
 
 /**
- * Головний скрипт лендінгу (Життєвий цикл запиту за методичкою)
+ * Отримання поточного slug сторінки з URL
+ * Підтримує як стандартні URL (/about), так і query (?p=about або ?page=about) та хеш (/#/about)
  */
-async function init() {
-  // 1. Отримуємо загальні дані (хедер, футер із Globals)
-  const common = await fetchCommonData()
-  renderHeader(common.header)
-  renderFooter(common.footer)
+function getCurrentPageSlug(): string {
+  const params = new URLSearchParams(window.location.search)
+  const pageParam = params.get('page') || params.get('p')
+  if (pageParam) {
+    return pageParam.replace(/^\/+|\/+$/g, '')
+  }
 
-  // 2. Отримуємо блоки для лендінгу
+  const pathname = window.location.pathname.replace(/^\/+|\/+$/g, '')
+  if (pathname && !pathname.endsWith('.html') && pathname !== 'index') {
+    return pathname
+  }
+
+  const hash = window.location.hash
+  if (hash.startsWith('#/')) {
+    return hash.replace(/^#\//, '')
+  }
+
+  return 'home'
+}
+
+/**
+ * Клієнтська навігація (SPA роутер)
+ */
+function navigateTo(url: string) {
+  if (url.startsWith('#')) {
+    const currentSlug = getCurrentPageSlug()
+    if (currentSlug !== 'home') {
+      window.history.pushState({ slug: 'home' }, '', `/${url}`)
+      loadPage('home', url)
+      return
+    }
+    const target = document.querySelector(url)
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' })
+    }
+    return
+  }
+
+  let targetSlug = 'home'
+  if (url.startsWith('/?') || url.includes('?p=') || url.includes('?page=')) {
+    const params = new URLSearchParams(url.split('?')[1] || '')
+    targetSlug = params.get('page') || params.get('p') || 'home'
+  } else {
+    const clean = url.replace(/^\/+|\/+$/g, '')
+    targetSlug = clean || 'home'
+  }
+
+  const newUrl = targetSlug === 'home' ? '/' : `/?p=${encodeURIComponent(targetSlug)}`
+  window.history.pushState({ slug: targetSlug }, '', newUrl)
+  loadPage(targetSlug)
+}
+
+function handleRouterClick(e: Event) {
+  e.preventDefault()
+  const el = e.currentTarget as HTMLAnchorElement
+  const href = el.getAttribute('href') || '/'
+  navigateTo(href)
+}
+
+function setupRouterLinks() {
+  document.querySelectorAll('a.js-router-link').forEach((link) => {
+    link.removeEventListener('click', handleRouterClick)
+    link.addEventListener('click', handleRouterClick)
+  })
+}
+
+/**
+ * Завантаження та динамічний рендеринг сторінки за її slug
+ */
+async function loadPage(slug: string, targetAnchor?: string) {
   const mainEl = document.getElementById('app-main')
-  if (mainEl) {
-    try {
-      mainEl.innerHTML = `
-        <div class="loading-container">
-          <div class="lego-spinner"></div>
-          <div class="loading-text">Завантаження GromBricks...</div>
+  if (!mainEl) return
+
+  const isHome = slug === 'home' || slug === ''
+
+  // Індикатор завантаження
+  mainEl.innerHTML = `
+    <div class="loading-container">
+      <div class="lego-spinner"></div>
+      <div class="loading-text">Завантаження GromBricks...</div>
+    </div>
+  `
+
+  try {
+    const pageData = await fetchPageData(isHome ? '/' : slug)
+    const brandName = globalCommonData?.header?.brandName || 'GromBricks'
+
+    // Оновлюємо заголовок сторінки у вкладці браузера
+    document.title = isHome ? pageData.title : `${pageData.title} | ${brandName}`
+
+    // Хлібні крихти для внутрішніх сторінок
+    const breadcrumbsHtml = !isHome
+      ? `
+        <div class="page-breadcrumbs">
+          <a href="/" class="breadcrumb-back-btn js-router-link">
+            <i class="ri-arrow-left-line"></i>
+            <span>На головну</span>
+          </a>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">${pageData.title}</span>
         </div>
       `
-      const pageData = await fetchPageData('/')
+      : ''
 
-      // Формуємо чітку послідовність блоків лендінгу за завданням:
-      // 1. hero
-      // 2. features ("Чому обирають нас")
-      // 3. modelViewer (3D вітрина)
-      // 4. categoryCards (Напрями)
-      // 5. cta (Telegram / підписка)
-      const rawBlocks = pageData.blocks || []
+    // Рендеримо всі блоки сторінки з CMS
+    const blocksHtml = renderBlocks(pageData.blocks || [])
 
-      const heroBlock = rawBlocks.find((b) => b.blockType === 'hero') || { blockType: 'hero' }
-      const featuresBlock = rawBlocks.find((b) => b.blockType === 'features') || { blockType: 'features' }
-      const modelViewerBlock = rawBlocks.find((b) => b.blockType === 'modelViewer') || { blockType: 'modelViewer' }
-      const categoryCardsBlock = rawBlocks.find((b) => b.blockType === 'categoryCards') || { blockType: 'categoryCards' }
-      const ctaBlock = rawBlocks.find((b) => b.blockType === 'cta') || { blockType: 'cta' }
+    mainEl.innerHTML = `
+      ${breadcrumbsHtml}
+      ${blocksHtml}
+    `
 
-      const blocks = [
-        heroBlock,
-        featuresBlock,
-        modelViewerBlock,
-        categoryCardsBlock,
-        ctaBlock,
-      ]
-
-      // 3. Динамічний рендеринг блоків у DOM
-      mainEl.innerHTML = renderBlocks(blocks)
-
-      // 4. Ініціалізуємо інтерактивну 3D сцену Three.js
+    // Якщо на сторінці є 3D вітрина — ініціалізуємо сцену Three.js
+    const has3D = (pageData.blocks || []).some(
+      (b) => b.blockType === 'modelViewer' || (b as any).type === 'modelViewer',
+    )
+    if (has3D) {
       setTimeout(() => {
         initThreeViewer()
       }, 50)
+    }
 
-      setupSmoothScrolling()
-      setupDjangoLinks()
-    } catch (error) {
+    setupSmoothScrolling()
+    setupDjangoLinks()
+    setupRouterLinks()
+
+    // Скрол до потрібного місця
+    const anchor = targetAnchor || window.location.hash
+    if (anchor && isHome) {
+      const targetEl = document.querySelector(anchor)
+      if (targetEl) {
+        setTimeout(() => targetEl.scrollIntoView({ behavior: 'smooth' }), 100)
+        return
+      }
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  } catch (error: any) {
+    const isNotFound = error?.status === 404 || error?.message?.includes('не знайдено')
+
+    if (isNotFound) {
+      document.title = 'Сторінку не знайдено (404) | GromBricks'
+      mainEl.innerHTML = `
+        <div class="not-found-section">
+          <div class="not-found-card">
+            <div class="not-found-code">404</div>
+            <h2 class="not-found-title">Сторінку не знайдено</h2>
+            <p class="not-found-desc">
+              Сторінка <strong>"${slug}"</strong> ще не створена в базі даних Payload CMS або знаходиться в чернетках.
+              Ви можете створити або відредагувати її в адмін-панелі.
+            </p>
+            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+              <a href="/" class="btn btn-primary js-router-link">
+                <i class="ri-arrow-left-line"></i>
+                <span>Повернутися на головну</span>
+              </a>
+              <a href="${CMS_ADMIN_URL}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+                <i class="ri-settings-3-line"></i>
+                <span>Адмін-панель CMS</span>
+                <i class="ri-arrow-right-up-line"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      `
+    } else {
       mainEl.innerHTML = `
         <div class="error-container">
           <h2 class="error-title">Помилка завантаження</h2>
-          <p class="error-message">Не вдалося завантажити лендінг. Перевірте з'єднання з сервером.</p>
+          <p class="error-message">Не вдалося завантажити сторінку. Перевірте з'єднання з сервером або спробуйте пізніше.</p>
         </div>
       `
     }
+
+    setupRouterLinks()
   }
 }
 
-function renderHeader(_header: any) {
+/**
+ * Динамічний рендеринг шапки сайту (Header) з даних CMS
+ */
+function renderHeader(header: CommonData['header']) {
   const container = document.getElementById('app-header')
   if (!container) return
 
-  // Лаконічні якірні посилання для швидкої навігації лендінгом
-  const navHtml = `
-    <a href="#why-us" class="nav-link">ПЕРЕВАГИ</a>
-    <a href="#models-3d" class="nav-link">3D ВІТРИНА</a>
-    <a href="#directions" class="nav-link">НАПРЯМКИ</a>
-    <a href="#about" class="nav-link">ПРО НАС</a>
-    <a href="https://t.me/grombricks" target="_blank" rel="noopener noreferrer" class="nav-link nav-link-telegram">
-      <i class="ri-telegram-fill"></i> TELEGRAM
-    </a>
-  `
+  const navItems =
+    header && Array.isArray(header.navItems) && header.navItems.length > 0
+      ? header.navItems
+      : [
+          { label: 'ПЕРЕВАГИ', url: '#why-us' },
+          { label: '3D ВІТРИНА', url: '#models-3d' },
+          { label: 'НАПРЯМКИ', url: '#directions' },
+          { label: 'ПРО НАС', url: '#about' },
+        ]
+
+  const telegramUrl = header?.telegramUrl || 'https://t.me/grombricks'
+  const currentSlug = getCurrentPageSlug()
+
+  // Формуємо HTML пунктів навігації
+  const navHtml = navItems
+    .map((item) => {
+      const isAnchor = item.url.startsWith('#')
+      const isExternal = item.url.startsWith('http')
+      const targetHref = isAnchor && currentSlug !== 'home' ? `/${item.url}` : item.url
+      const linkClass = !isAnchor && !isExternal ? 'nav-link js-router-link' : 'nav-link'
+      const targetAttr = isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''
+
+      return `<a href="${targetHref}" class="${linkClass}" ${targetAttr}>${item.label}</a>`
+    })
+    .join('')
+
+  const mobileNavHtml = navItems
+    .map((item) => {
+      const isAnchor = item.url.startsWith('#')
+      const isExternal = item.url.startsWith('http')
+      const targetHref = isAnchor && currentSlug !== 'home' ? `/${item.url}` : item.url
+      const linkClass =
+        !isAnchor && !isExternal ? 'mobile-nav-link js-router-link' : 'mobile-nav-link'
+      const targetAttr = isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''
+
+      return `<a href="${targetHref}" class="${linkClass}" ${targetAttr}>${item.label}</a>`
+    })
+    .join('')
 
   container.innerHTML = `
     <div class="header-container">
-      <a href="#" class="logo-link" aria-label="GromBricks — головна сторінка">
+      <a href="/" class="logo-link js-router-link" aria-label="GromBricks — головна сторінка">
         <img src="/images/logo.png" class="logo-image" alt="GromBricks" />
         <span class="logo-wordmark" aria-hidden="true"><span>GROM</span><span>BRICKS</span></span>
       </a>
 
       <nav class="desktop-nav">
         ${navHtml}
+        <a href="${telegramUrl}" target="_blank" rel="noopener noreferrer" class="nav-link nav-link-telegram">
+          <i class="ri-telegram-fill"></i> TELEGRAM
+        </a>
       </nav>
 
       <div class="header-actions">
@@ -106,20 +260,18 @@ function renderHeader(_header: any) {
 
     <!-- Мобільне меню навігації -->
     <div id="mobile-nav-drawer" class="mobile-nav-drawer">
-      <a href="#why-us" class="mobile-nav-link">ПЕРЕВАГИ</a>
-      <a href="#models-3d" class="mobile-nav-link">3D ВІТРИНА</a>
-      <a href="#directions" class="mobile-nav-link">НАПРЯМКИ</a>
-      <a href="#about" class="mobile-nav-link">ПРО НАС</a>
+      ${mobileNavHtml}
       <a href="#" class="mobile-nav-link js-django-link" style="color:var(--gold-light);">
         <i class="ri-store-2-line"></i> МАГАЗИН <i class="ri-arrow-right-up-line"></i>
       </a>
-      <a href="https://t.me/grombricks" target="_blank" rel="noopener noreferrer" class="mobile-nav-link" style="color:var(--gold-accent);">
+      <a href="${telegramUrl}" target="_blank" rel="noopener noreferrer" class="mobile-nav-link" style="color:var(--gold-accent);">
         <i class="ri-telegram-fill"></i> TELEGRAM
       </a>
     </div>
   `
 
   setupMobileMenu()
+  setupRouterLinks()
 }
 
 function setupMobileMenu() {
@@ -171,7 +323,10 @@ function setupMobileMenu() {
   })
 }
 
-function renderFooter(footer: any) {
+/**
+ * Динамічний рендеринг підвалу сайту (Footer) з даних CMS
+ */
+function renderFooter(footer: CommonData['footer']) {
   const container = document.getElementById('app-footer')
   if (!container) return
 
@@ -243,6 +398,25 @@ function setupDjangoLinks() {
       )
     })
   })
+}
+
+/**
+ * Ініціалізація застосунку
+ */
+async function init() {
+  // 1. Завантажуємо та рендеримо загальні елементи сайту (Header / Footer)
+  globalCommonData = await fetchCommonData()
+  renderHeader(globalCommonData.header)
+  renderFooter(globalCommonData.footer)
+
+  // 2. Слухаємо кнопки "Назад / Вперед" у браузері
+  window.addEventListener('popstate', () => {
+    loadPage(getCurrentPageSlug())
+  })
+
+  // 3. Завантажуємо поточну сторінку (головну або за slug)
+  const initialSlug = getCurrentPageSlug()
+  loadPage(initialSlug)
 }
 
 // Запуск після завантаження DOM
