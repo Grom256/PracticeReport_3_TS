@@ -1,15 +1,15 @@
 import type { CommonData, PageResponse } from './types.ts'
 
 /**
- * Локально Vite проксує API на Payload CMS. У Vercel задай VITE_API_BASE
- * (наприклад, https://grombricks-cms.vercel.app), бо фронтенд і CMS мають
- * різні домени.
+ * Локально Vite проксує API на Payload CMS. У Vercel використовується VITE_API_BASE
+ * або прямий продакшен-домен бекенду Payload CMS.
  */
 export const API_BASE = (
-  import.meta.env.VITE_API_BASE?.trim() || ''
+  import.meta.env.VITE_API_BASE?.trim() ||
+  (import.meta.env.DEV ? 'http://localhost:3000' : 'https://practice-report-3-ts.vercel.app')
 ).replace(/\/+$/, '')
 
-export const CMS_ADMIN_URL = `${API_BASE || (import.meta.env.DEV ? 'http://localhost:3000' : '')}/admin`
+export const CMS_ADMIN_URL = `${API_BASE}/admin`
 
 /**
  * Отримання наскрізних даних сайту (/api/common)
