@@ -8,6 +8,15 @@ export const TextBlock: Block = {
   },
   fields: [
     {
+      name: 'anchor',
+      type: 'text',
+      label: 'Якір розділу (id для навігації, напр: about, delivery)',
+      admin: {
+        description: 'Навігаційні посилання будуть вести на #anchor. Залиште порожнім якщо не потрібен.',
+        placeholder: 'about',
+      },
+    },
+    {
       name: 'badge',
       type: 'text',
       label: 'Бейдж (надзаголовок)',

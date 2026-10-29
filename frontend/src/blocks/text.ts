@@ -1,6 +1,7 @@
 import type { PageBlock } from '../types.ts'
 
 export function renderTextBlock(block: PageBlock): string {
+  const anchor = block.anchor || ''
   const badge = block.badge || 'ІНФОРМАЦІЯ'
   const title = block.title || 'Інформаційна сторінка'
   const subtitle = block.subtitle || ''
@@ -38,11 +39,11 @@ export function renderTextBlock(block: PageBlock): string {
     : ''
 
   return `
-    <section class="content-page-section">
+    <section class="content-page-section"${anchor ? ` id="${anchor}"` : ''}>
       <div class="content-page-container">
         <div class="content-page-header">
           <div class="section-label">${badge}</div>
-          <h1 class="content-page-title">${title}</h1>
+          <h2 class="content-page-title">${title}</h2>
           ${subtitle ? `<p class="content-page-subtitle">${subtitle}</p>` : ''}
         </div>
 

@@ -3061,11 +3061,12 @@ button, input, select, textarea {
 }
 
 .content-page-section {
-  padding: 48px 24px 96px;
+  padding: 80px 24px 80px;
+  scroll-margin-top: 80px; /* offset for sticky header */
 }
 
 .content-page-container {
-  max-width: 880px;
+  max-width: 960px;
   margin: 0 auto;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
