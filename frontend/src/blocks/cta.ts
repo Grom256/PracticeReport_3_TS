@@ -12,7 +12,6 @@ export function renderCtaBlock(block: PageBlock): string {
   return `
     <section class="telegram-callout-section">
       <div class="telegram-callout-card">
-        <!-- Фонова емблема бренду -->
         <img src="/images/logo.png" class="cta-bg-logo" alt="" aria-hidden="true" />
 
         <div class="telegram-callout-text">

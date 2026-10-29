@@ -1,11 +1,6 @@
 import type { PayloadHandler } from 'payload'
 import { MOCK_HOME_BLOCKS } from '../lib/mockData'
 
-/**
- * Ендпоінт /api/page?path=
- * Згідно з методичкою: повертає чисті плоскі дані сторінки з масивом блоків
- * замість занадто складної структури стандартного REST API Payload CMS.
- */
 export const pageDataHandler: PayloadHandler = async (req) => {
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -31,10 +26,8 @@ export const pageDataHandler: PayloadHandler = async (req) => {
         pageDoc = pagesRes.docs[0]
       }
     } catch (e) {
-      // Fallback до мокових даних при відсутності запису в базі даних
     }
 
-    // Перевірка: якщо сторінка в чернетках (не опублікована)
     if (pageDoc && pageDoc.isPublished === false) {
       return Response.json(
         {
@@ -47,7 +40,6 @@ export const pageDataHandler: PayloadHandler = async (req) => {
       )
     }
 
-    // Якщо сторінка не знайдена і це не головна сторінка — повертаємо 404
     if (!pageDoc && slug !== 'home') {
       return Response.json(
         {
@@ -60,10 +52,8 @@ export const pageDataHandler: PayloadHandler = async (req) => {
       )
     }
 
-    // Якщо сторінка знайдена в БД — беремо її блоки, інакше для головної — моковий набір лендінгу
     const blocks = pageDoc?.layout || (slug === 'home' ? MOCK_HOME_BLOCKS : [])
 
-    // Формуємо чистий плоский JSON для фронтенду
     const pageResponse = {
       path: pathParam,
       title: pageDoc?.title || (slug === 'home' ? 'GromBricks — Колекційні мініфігурки LEGO' : slug),

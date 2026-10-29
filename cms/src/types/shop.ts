@@ -1,22 +1,7 @@
-/**
- * GromBricks - TypeScript Type Definitions
- * Розділ 2.3. Типізація на TypeScript (Презентаційний лендінг):
- * - Type Aliases (Псевдоніми типів)
- * - Union Types / Discriminated Unions (Дискриміновані об'єднання типів)
- * - Intersection Types (Типи перетину)
- * - Типізація функцій і об'єктів
- * - Типізація клієнт-серверного API обміну
- */
-
-// ==========================================
-// 1. TYPE ALIASES (Базові псевдоніми типів)
-// ==========================================
-
 export type ID = string | number
 export type Slug = string
 export type ModelId = 'golden_ninja' | 'kai_jungle' | 'cole_jungle' | string
 
-/** Популярні серії всесвіту LEGO */
 export type LegoSeries =
   | 'Star Wars'
   | 'Marvel Super Heroes'
@@ -29,20 +14,12 @@ export type LegoSeries =
   | 'The Lord of the Rings'
   | 'Custom / MOC'
 
-/** Валюта цін */
 export type Currency = 'UAH' | 'EUR' | 'USD'
 
-/** Стилістичні варіанти промо-банера */
 export type BannerVariant = 'legoYellow' | 'darkBrick' | 'accentRed'
 
-/** Режими керування 3D-вітриною Three.js */
 export type ViewerControlMode = 'orbit' | 'autoRotate' | 'static'
 
-// ==========================================
-// 2. UNION TYPES (Об'єднання типів)
-// ==========================================
-
-/** Дискримінант типів контентних блоків лендінгу (Page Builder) */
 export type BlockType =
   | 'hero'
   | 'features'
@@ -79,7 +56,6 @@ export interface FeaturesBlockData {
   items: FeatureItem[]
 }
 
-/** 3D модель мініфігурки для інтерактивного перегляду */
 export interface Model3DItem {
   modelId: ModelId
   name: string
@@ -146,10 +122,6 @@ export interface TextBlockData {
   highlightBox?: string
 }
 
-/**
- * Дискриміноване об'єднання (Discriminated Union) блоків лендінгу.
- * Поле 'blockType' слугує спільним дискримінантом для безпечного звуження типів (type narrowing).
- */
 export type PageBlockData =
   | HeroBlockData
   | FeaturesBlockData
@@ -159,9 +131,6 @@ export type PageBlockData =
   | CtaBlockData
   | TextBlockData
 
-/**
- * Узагальнене дискриміноване об'єднання для представлення життєвого циклу UI
- */
 export type UIState<T> =
   | { status: 'idle' }
   | { status: 'loading' }
@@ -169,16 +138,9 @@ export type UIState<T> =
   | { status: 'empty'; message?: string }
   | { status: 'error'; error: string }
 
-/**
- * Строгий контракт клієнт-серверного обміну
- */
 export type ApiResponse<T> =
   | { success: true; data: T; message?: string; timestamp?: string }
   | { success: false; error: string; statusCode?: number; timestamp?: string }
-
-// ==========================================
-// 3. БАЗОВІ СУТНОСТІ CMS ТА ВІТРИНИ
-// ==========================================
 
 export interface MediaItem {
   id: ID
@@ -204,24 +166,17 @@ export interface Category {
   order?: number
 }
 
-// ==========================================
-// 4. INTERSECTION TYPES (Типи перетину)
-// ==========================================
-
-/** 3D-модель із розширеними параметрами рендерингу сцени */
 export type ModelWithSceneSettings = Model3DItem & {
   initialCameraDistance?: number
   rotationSpeed?: number
   ambientIntensity?: number
 }
 
-/** Картка напрямку із таймером активності */
 export type FeaturedCategoryCard = CategoryCardItem & {
   featuredUntil?: string
   priorityOrder: number
 }
 
-/** Сторінка з набором динамічних блоків */
 export interface PageLayout {
   id: ID
   title: string
@@ -233,31 +188,19 @@ export type PageWithBlocks = PageLayout & {
   lastUpdatedFormatted?: string
 }
 
-// ==========================================
-// 5. ТИПІЗАЦІЯ ФУНКЦІЙ І ОБ'ЄКТІВ
-// ==========================================
-
-/** Параметри пошуку та вибірки 3D моделей */
 export interface ModelFilterOptions {
   tag?: string
   searchQuery?: string
   isFeatured?: boolean
 }
 
-/** Сигнатура функції фільтрації 3D моделей у вітрині */
 export type FilterModelsFn = (
   models: Model3DItem[],
   options: ModelFilterOptions,
 ) => Model3DItem[]
 
-/** Сигнатура перемикача активної 3D моделі */
 export type SwitchModelHandler = (modelId: string) => Promise<boolean>
 
-// ==========================================
-// 6. ТИПІЗАЦІЯ ДАНИХ API
-// ==========================================
-
-/** Уніфікована відповідь колекцій Payload CMS */
 export interface PayloadDocsResponse<T> {
   docs: T[]
   totalDocs: number

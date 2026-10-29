@@ -7,7 +7,6 @@ export function renderHeroBlock(block: PageBlock): string {
     block.subheading ||
     'Колекційні мініфігурки Star Wars, Ninjago, Marvel та унікальні будівельні деталі в Україні. Перевірена якість та оригінал.'
 
-  // Прибираємо емодзі якщо є на початку
   const rawBadge = block.badge || 'ПРЕМІАЛЬНІ LEGO КОЛЕКЦІЇ'
   const badge = rawBadge.replace(/^[🧱🔥✨\s]+/, '').trim()
 
@@ -17,7 +16,6 @@ export function renderHeroBlock(block: PageBlock): string {
   const rawSecondaryLink = block.secondaryButtonLink || '#why-us'
   const imageUrl = block.imageUrl || '/images/hero-bg.webp'
 
-  // Визначаємо іконки для основної кнопки
   const primaryLower = primaryText.toLowerCase()
   const primaryLeadingIcon =
     primaryLower.includes('3d') || primaryLower.includes('модел') || primaryLower.includes('експозиц')
@@ -26,7 +24,6 @@ export function renderHeroBlock(block: PageBlock): string {
       ? 'ri-shield-star-line'
       : 'ri-arrow-down-line'
 
-  // Визначаємо іконки та класи для додаткової кнопки
   const secondaryLower = secondaryText.toLowerCase()
   const isSecondaryAnchor = rawSecondaryLink.startsWith('#')
   const isSecondaryDjango =

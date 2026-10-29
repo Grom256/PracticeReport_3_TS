@@ -47,7 +47,6 @@ export const MODELS_DATA: ModelInfo[] = [
   },
 ]
 
-// Поточний динамічний список моделей (з CMS або дефолтний)
 let activeModelsList: ModelInfo[] = [...MODELS_DATA]
 
 export function renderModelViewerBlock(block?: PageBlock): string {
@@ -140,11 +139,8 @@ export function renderModelViewerBlock(block?: PageBlock): string {
   `
 }
 
-/**
- * Ініціалізація Three.js сцени для перегляду .obj + .mtl файлів
- */
 export function initThreeViewer() {
-  const container = document.getElementById('threejs-canvas-container')
+  const container = document.querySelector<HTMLElement>('#threejs-canvas-container')
   if (!container) return
 
   const getViewportSize = () => {
@@ -157,7 +153,6 @@ export function initThreeViewer() {
 
   const { width, height } = getViewportSize()
 
-  // 1. Сцена, камера, рендерер
   const scene = new THREE.Scene()
   scene.background = new THREE.Color(0x070b16)
 
@@ -170,13 +165,11 @@ export function initThreeViewer() {
   renderer.shadowMap.enabled = true
   renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
-  // Очищаємо попередній канвас, якщо є
   const oldCanvas = container.querySelector('canvas')
   if (oldCanvas) oldCanvas.remove()
   renderer.domElement.classList.add('threejs-canvas')
   container.appendChild(renderer.domElement)
 
-  // 2. Освітлення під золото та нічний стиль
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
   scene.add(ambientLight)
 
@@ -193,7 +186,6 @@ export function initThreeViewer() {
   rimLight.position.set(0, -10, -15)
   scene.add(rimLight)
 
-  // 3. Контроли (OrbitControls)
   const controls = new OrbitControls(camera, renderer.domElement)
   controls.enableDamping = true
   controls.dampingFactor = 0.05
@@ -203,7 +195,6 @@ export function initThreeViewer() {
   controls.minDistance = 6
   controls.enablePan = true
 
-  // 4. Підставка-п'єдестал
   const pedestalGeo = new THREE.CylinderGeometry(6, 6.5, 0.6, 64)
   const pedestalMat = new THREE.MeshStandardMaterial({
     color: 0x0c1a38,
@@ -215,7 +206,6 @@ export function initThreeViewer() {
   pedestal.receiveShadow = true
   scene.add(pedestal)
 
-  // Золоте кільце на п'єдесталі
   const ringGeo = new THREE.TorusGeometry(6.05, 0.08, 16, 64)
   const ringMat = new THREE.MeshStandardMaterial({
     color: 0xe6bf55,
@@ -229,9 +219,8 @@ export function initThreeViewer() {
 
   let currentModelGroup: THREE.Group | null = null
 
-  // 5. Завантаження моделі
   function loadModel(modelData: ModelInfo) {
-    const spinner = document.getElementById('model-loading-spinner')
+    const spinner = document.querySelector<HTMLElement>('#model-loading-spinner')
     if (spinner) spinner.style.display = 'flex'
 
     if (currentModelGroup) {
@@ -311,12 +300,10 @@ export function initThreeViewer() {
     )
   }
 
-  // Завантажуємо першу модель зі списку
   if (activeModelsList.length > 0) {
     loadModel(activeModelsList[0])
   }
 
-  // 6. Обробка перемикання табів
   const tabs = document.querySelectorAll('.model-select-tab')
   tabs.forEach((tab) => {
     tab.addEventListener('click', (e) => {
@@ -326,10 +313,10 @@ export function initThreeViewer() {
       const modelId = current.getAttribute('data-model-id')
       const target = activeModelsList.find((m) => m.id === modelId)
       if (target) {
-        const tagEl = document.getElementById('active-model-tag')
-        const nameEl = document.getElementById('active-model-name')
-        const subtitleEl = document.getElementById('active-model-subtitle')
-        const descEl = document.getElementById('active-model-desc')
+        const tagEl = document.querySelector<HTMLElement>('#active-model-tag')
+        const nameEl = document.querySelector<HTMLElement>('#active-model-name')
+        const subtitleEl = document.querySelector<HTMLElement>('#active-model-subtitle')
+        const descEl = document.querySelector<HTMLElement>('#active-model-desc')
 
         if (tagEl) tagEl.textContent = target.tag
         if (nameEl) nameEl.textContent = target.name
@@ -341,7 +328,6 @@ export function initThreeViewer() {
     })
   })
 
-  // 7. Анімаційний цикл
   function animate() {
     requestAnimationFrame(animate)
     controls.update()
@@ -349,7 +335,6 @@ export function initThreeViewer() {
   }
   animate()
 
-  // 8. ResizeObserver
   function resizeRenderer() {
     const { width: newWidth, height: newHeight } = getViewportSize()
     camera.aspect = newWidth / newHeight

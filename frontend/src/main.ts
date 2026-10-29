@@ -5,10 +5,6 @@ import type { CommonData } from './types.ts'
 
 let globalCommonData: CommonData | null = null
 
-/**
- * Отримання поточного slug сторінки з URL
- * Підтримує як стандартні URL (/about), так і query (?p=about або ?page=about) та хеш (/#/about)
- */
 function getCurrentPageSlug(): string {
   const params = new URLSearchParams(window.location.search)
   const pageParam = params.get('page') || params.get('p')
@@ -29,9 +25,6 @@ function getCurrentPageSlug(): string {
   return 'home'
 }
 
-/**
- * Клієнтська навігація (SPA роутер)
- */
 function navigateTo(url: string) {
   if (url.startsWith('#')) {
     const currentSlug = getCurrentPageSlug()
@@ -75,16 +68,12 @@ function setupRouterLinks() {
   })
 }
 
-/**
- * Завантаження та динамічний рендеринг сторінки за її slug
- */
 async function loadPage(slug: string, targetAnchor?: string) {
-  const mainEl = document.getElementById('app-main')
+  const mainEl = document.querySelector<HTMLElement>('#app-main')
   if (!mainEl) return
 
   const isHome = slug === 'home' || slug === ''
 
-  // Індикатор завантаження
   mainEl.innerHTML = `
     <div class="loading-container">
       <div class="lego-spinner"></div>
@@ -96,10 +85,8 @@ async function loadPage(slug: string, targetAnchor?: string) {
     const pageData = await fetchPageData(isHome ? '/' : slug)
     const brandName = globalCommonData?.header?.brandName || 'GromBricks'
 
-    // Оновлюємо заголовок сторінки у вкладці браузера
     document.title = isHome ? pageData.title : `${pageData.title} | ${brandName}`
 
-    // Хлібні крихти для внутрішніх сторінок
     const breadcrumbsHtml = !isHome
       ? `
         <div class="page-breadcrumbs">
@@ -113,7 +100,6 @@ async function loadPage(slug: string, targetAnchor?: string) {
       `
       : ''
 
-    // Рендеримо всі блоки сторінки з CMS
     const blocksHtml = renderBlocks(pageData.blocks || [])
 
     mainEl.innerHTML = `
@@ -121,7 +107,6 @@ async function loadPage(slug: string, targetAnchor?: string) {
       ${blocksHtml}
     `
 
-    // Якщо на сторінці є 3D вітрина — ініціалізуємо сцену Three.js
     const has3D = (pageData.blocks || []).some(
       (b) => b.blockType === 'modelViewer' || (b as any).type === 'modelViewer',
     )
@@ -135,7 +120,6 @@ async function loadPage(slug: string, targetAnchor?: string) {
     setupDjangoLinks()
     setupRouterLinks()
 
-    // Скрол до потрібного місця
     const anchor = targetAnchor || window.location.hash
     if (anchor && isHome) {
       const targetEl = document.querySelector(anchor)
@@ -147,7 +131,6 @@ async function loadPage(slug: string, targetAnchor?: string) {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   } catch (error: any) {
     const isNotFound = error?.status === 404 || error?.message?.includes('не знайдено')
-
     if (isNotFound) {
       document.title = 'Сторінку не знайдено (404) | GromBricks'
       mainEl.innerHTML = `
@@ -186,11 +169,8 @@ async function loadPage(slug: string, targetAnchor?: string) {
   }
 }
 
-/**
- * Динамічний рендеринг шапки сайту (Header) з даних CMS
- */
 function renderHeader(header: CommonData['header']) {
-  const container = document.getElementById('app-header')
+  const container = document.querySelector<HTMLElement>('#app-header')
   if (!container) return
 
   const navItems =
@@ -206,7 +186,6 @@ function renderHeader(header: CommonData['header']) {
   const telegramUrl = header?.telegramUrl || 'https://t.me/grombricks'
   const currentSlug = getCurrentPageSlug()
 
-  // Формуємо HTML пунктів навігації
   const navHtml = navItems
     .map((item) => {
       const isAnchor = item.url.startsWith('#')
@@ -258,7 +237,6 @@ function renderHeader(header: CommonData['header']) {
       </div>
     </div>
 
-    <!-- Мобільне меню навігації -->
     <div id="mobile-nav-drawer" class="mobile-nav-drawer">
       ${mobileNavHtml}
       <a href="${DJANGO_SHOP_URL}" target="_blank" rel="noopener noreferrer" class="mobile-nav-link js-django-link" style="color:var(--gold-light);">
@@ -275,8 +253,8 @@ function renderHeader(header: CommonData['header']) {
 }
 
 function setupMobileMenu() {
-  const toggleBtn = document.getElementById('mobile-menu-toggle-btn')
-  const drawer = document.getElementById('mobile-nav-drawer')
+  const toggleBtn = document.querySelector<HTMLElement>('#mobile-menu-toggle-btn')
+  const drawer = document.querySelector<HTMLElement>('#mobile-nav-drawer')
   if (!toggleBtn || !drawer) return
 
   const closeMenu = () => {
@@ -305,14 +283,12 @@ function setupMobileMenu() {
     }
   })
 
-  // Закриваємо мобільне меню при кліку на будь-яке посилання
   drawer.querySelectorAll('a').forEach((link) => {
     link.addEventListener('click', () => {
       closeMenu()
     })
   })
 
-  // Закриваємо мобільне меню при кліку поза його межами
   document.addEventListener('click', (e) => {
     if (drawer.classList.contains('is-open')) {
       const target = e.target as Node
@@ -323,11 +299,8 @@ function setupMobileMenu() {
   })
 }
 
-/**
- * Динамічний рендеринг підвалу сайту (Footer) з даних CMS
- */
 function renderFooter(footer: CommonData['footer']) {
-  const container = document.getElementById('app-footer')
+  const container = document.querySelector<HTMLElement>('#app-footer')
   if (!container) return
 
   container.innerHTML = `
@@ -400,26 +373,19 @@ function setupDjangoLinks() {
   })
 }
 
-/**
- * Ініціалізація застосунку
- */
 async function init() {
-  // 1. Завантажуємо та рендеримо загальні елементи сайту (Header / Footer)
   globalCommonData = await fetchCommonData()
   renderHeader(globalCommonData.header)
   renderFooter(globalCommonData.footer)
 
-  // 2. Слухаємо кнопки "Назад / Вперед" у браузері
   window.addEventListener('popstate', () => {
     loadPage(getCurrentPageSlug())
   })
 
-  // 3. Завантажуємо поточну сторінку (головну або за slug)
   const initialSlug = getCurrentPageSlug()
   loadPage(initialSlug)
 }
 
-// Запуск після завантаження DOM
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init)
 } else {

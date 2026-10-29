@@ -5,9 +5,6 @@ import type {
   Currency,
 } from '../types/shop'
 
-/**
- * Утиліта для пошуку та фільтрації 3D моделей у вітрині
- */
 export const filterModels: FilterModelsFn = (models, options) => {
   return models.filter((model) => {
     if (options.tag && model.tag && !model.tag.toLowerCase().includes(options.tag.toLowerCase())) {
@@ -30,9 +27,6 @@ export const filterModels: FilterModelsFn = (models, options) => {
   })
 }
 
-/**
- * Форматування валютних значень для інтерфейсу
- */
 export function formatPrice(amount: number, currency: Currency = 'UAH'): string {
   const formatted = amount.toLocaleString('uk-UA')
   if (currency === 'EUR') return `€${formatted}`

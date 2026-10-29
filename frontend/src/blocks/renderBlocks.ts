@@ -7,11 +7,6 @@ import { renderFeaturesBlock } from './features.ts'
 import { renderTextBlock } from './text.ts'
 import { renderBannerBlock } from './banner.ts'
 
-/**
- * Файл renderBlocks.ts
- * Точно як у методичці: перебирає масив блоків від API (кожен блок має свій type/blockType),
- * викликає відповідний шаблон верстки та формує підсумковий HTML для вставки у DOM!
- */
 export function renderBlocks(blocks: PageBlock[]): string {
   if (!Array.isArray(blocks) || blocks.length === 0) {
     return ''

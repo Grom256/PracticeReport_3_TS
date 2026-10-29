@@ -7,7 +7,6 @@ export function renderTextBlock(block: PageBlock): string {
   const content = block.content || ''
   const highlightBox = block.highlightBox || ''
 
-  // Розбиваємо вміст на абзаци для акуратного читання
   const paragraphs = content
     .split(/\n\n+/)
     .map((p: string) => p.trim())
@@ -15,7 +14,6 @@ export function renderTextBlock(block: PageBlock): string {
 
   const contentHtml = paragraphs
     .map((para: string) => {
-      // Якщо абзац містить список
       if (para.startsWith('- ') || para.startsWith('• ')) {
         const items = para
           .split('\n')

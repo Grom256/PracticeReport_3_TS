@@ -1,9 +1,5 @@
 import type { PayloadHandler } from 'payload'
 
-/**
- * Ендпоінт /api/common
- * Згідно з методичкою: повертає загальні дані (хедер, футер, контакти) із Globals
- */
 export const commonDataHandler: PayloadHandler = async (req) => {
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -23,7 +19,6 @@ export const commonDataHandler: PayloadHandler = async (req) => {
         slug: 'footer-settings',
       })
     } catch (e) {
-      // Fallback якщо база ще не заповнена
     }
 
     const data = {

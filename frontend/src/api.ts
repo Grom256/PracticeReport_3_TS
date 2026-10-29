@@ -1,9 +1,5 @@
 import type { CommonData, PageResponse } from './types.ts'
 
-/**
- * Локально Vite проксує API на Payload CMS. У Vercel використовується VITE_API_BASE
- * або прямий продакшен-домен бекенду Payload CMS.
- */
 const rawApiBase = import.meta.env.VITE_API_BASE?.trim()
 export const API_BASE = (
   (rawApiBase && !rawApiBase.includes('grombricks-cms') ? rawApiBase : '') ||
@@ -13,10 +9,6 @@ export const API_BASE = (
 export const CMS_ADMIN_URL = 'https://practice-report-3-ts.vercel.app/admin'
 export const DJANGO_SHOP_URL = 'https://grombricks.onrender.com/'
 
-/**
- * Отримання наскрізних даних сайту (/api/common)
- * Відповідає вимогам методички: хедер, футер, телефон, соцмережі із Globals
- */
 export async function fetchCommonData(): Promise<CommonData> {
   try {
     const res = await fetch(`${API_BASE}/api/common`)
@@ -47,10 +39,6 @@ export async function fetchCommonData(): Promise<CommonData> {
   }
 }
 
-/**
- * Отримання сторінки та її блоків (/api/page?path=...)
- * Відповідає вимогам методички: віддача контенту через конструктор блоків
- */
 export async function fetchPageData(path: string = '/'): Promise<PageResponse> {
   const isHome = path === '/' || path === 'home' || path === ''
   try {

@@ -1,14 +1,9 @@
 import type { PayloadHandler } from 'payload'
 
-/**
- * Ендпоінт початкового наповнення бази даних тестовими даними GromBricks
- * POST /api/seed
- */
 export const seedDatabaseHandler: PayloadHandler = async (req) => {
   const payload = req.payload
 
   try {
-    // 1. Створюємо або знаходимо базові категорії напрямків
     const categoriesData = [
       {
         title: 'Star Wars',
@@ -57,7 +52,6 @@ export const seedDatabaseHandler: PayloadHandler = async (req) => {
       }
     }
 
-    // 2. Створюємо головну сторінку лендінгу з динамічними блоками (Pages)
     const existingHomePage = await payload.find({
       collection: 'pages',
       where: { slug: { equals: 'home' } },
