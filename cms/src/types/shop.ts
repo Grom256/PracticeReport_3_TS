@@ -115,6 +115,7 @@ export interface CtaBlockData {
 export interface TextBlockData {
   blockType: 'text'
   id?: string
+  anchor?: string
   badge?: string
   title: string
   subtitle?: string
