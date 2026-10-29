@@ -13,6 +13,7 @@ export function renderBlocks(blocks: PageBlock[]): string {
   }
 
   return blocks
+    .filter((block) => block.isActive !== false && block.isPublished !== false)
     .map((block) => {
       const type = block.blockType || (block as any).type
 

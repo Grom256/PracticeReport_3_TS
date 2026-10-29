@@ -8,6 +8,15 @@ export const TextBlock: Block = {
   },
   fields: [
     {
+      name: 'isActive',
+      type: 'checkbox',
+      label: 'Опубліковано (відображати секцію на сайті)',
+      defaultValue: true,
+      admin: {
+        description: 'Зніміть прапорець, щоб тимчасово приховати цю секцію з лендінгу.',
+      },
+    },
+    {
       name: 'anchor',
       type: 'text',
       label: 'Якір розділу (id для навігації, напр: about, delivery)',

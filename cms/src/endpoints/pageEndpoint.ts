@@ -52,7 +52,8 @@ export const pageDataHandler: PayloadHandler = async (req) => {
       )
     }
 
-    const blocks = pageDoc?.layout || (slug === 'home' ? MOCK_HOME_BLOCKS : [])
+    const rawBlocks = pageDoc?.layout || (slug === 'home' ? MOCK_HOME_BLOCKS : [])
+    const blocks = rawBlocks.filter((b: any) => b.isActive !== false)
 
     const pageResponse = {
       path: pathParam,
