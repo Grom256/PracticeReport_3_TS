@@ -7,6 +7,7 @@ export const API_BASE = (
 ).replace(/\/+$/, '')
 
 export const CMS_ADMIN_URL = 'https://practice-report-3-ts.vercel.app/admin'
+export const DJANGO_SHOP_URL = 'https://grombricks.onrender.com/'
 
 export async function fetchCommonData(): Promise<CommonData> {
   try {
